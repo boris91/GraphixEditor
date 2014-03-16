@@ -1,60 +1,113 @@
 ﻿(function () {
-	var self = window.GL = {
+    var self = null,
+        _styles = [
+            'common'
+        ],
+        _stylesToIgnore = [],
+        _stylesBase = 'styles/',
+        _loadedScriptsCounter = 0,
+        _scripts = [
+		    'base/Settings',
+		    'base/User',
+		    'helpers/DomHelper',
+		    'helpers/Keys',
+		    'helpers/TypesHelper',
+		    'helpers/UIGenerator',
+		    'helpers/XhrWrapper',
+		    'devices/canvas/Stretcher',
+		    'devices/canvas/Painter',
+		    'devices/canvas/Canvas',
+		    'devices/canvas/CanvasManager',
+            'objects/containers/Layer',
+            'objects/containers/ObjectsManager',
+            'objects/containers/OrdersHash',
+            'objects/packages/base/model'
+        ],
+        _scriptsToIgnore = [],
+        _scriptsBase = 'code/',
+        _packages = [
+            'select',
+            'point',
+            'line',
+            'rect',
+            'regpoly'
+        ],
+        _packagesModules = [
+            'model',
+            'view',
+            'controller'
+        ],
+        _packagesBase = 'objects/packages/',
+        _userIdentity = 'user',
+        _window = window,
+        _internalLoadingComplete = false,
+        //+++ DEBUG MODE +++
+        _debugMode = true,
+        //--- DEBUG MODE ---
+        _addInternalLoadListeners = function (disallowUserInit, listeners) {
+            var eventsManager = self.eventsManager,
+                eventName, eventListeners, eventListenersCount, i;
+            eventsManager.add(self, 'load', function () { self.extend(self, new self.TypesHelper()); });
+            eventsManager.add(self, 'load', function () { self.DOM = new self.DomHelper(_window); });
+            eventsManager.add(self, 'load', function () { self.UI = new self.UIGenerator(true); });
+            eventsManager.add(self, 'load', function () { self.XHR = new self.XhrWrapper(); });
+            if (!disallowUserInit) {
+                eventsManager.add(self, 'load', function () { self.initUser(_window); });
+            }
+            for (eventName in listeners) {
+                eventListeners = listeners[eventName];
+                eventListenersCount = eventListeners.length;
+                for (i = 0; i < eventListenersCount; i++) {
+                    eventsManager.add(self, eventName, eventListeners[i]);
+                }
+            }
+        },
+        _bindInternalLoadToWindowLoad = function () {
+            var onloadHandler = function () {
+                if (!self.allScriptsLoaded()) {
+                    return self.defer(onloadHandler, 0);
+                }
+                self.eventsManager.fire(self, 'load');
+                _internalLoadingComplete = true;
+            },
+                loadScriptsAndFireSelfLoad = function () {
+                    self.loadAllStyles();
+                    self.loadAllScripts();
+                    self.loadAllPackages();
+                    onloadHandler();
+                };
+            if ('complete' !== _window.document.readyState) {
+                _window.addEventListener('load', loadScriptsAndFireSelfLoad, false);
+            } else {
+                loadScriptsAndFireSelfLoad();
+            }
+        };
+    self = window.GL = {
 		/*{ scripts, scriptsToIgnore, scriptsBase, userIdentity, window, disallowUserInit, skipInternalLoading, listeners }*/
 	    initialize: function (params) {
 	        params = params || {};
 	        //TODO: move to a separate file
-	        this._styles = params.styles || [
-                'common'
-	        ];
-	        this._stylesToIgnore = params.stylesToIgnore || [];
-	        this._stylesBase = params.stylesBase || 'styles/';
-	        this._scripts = params.scripts || [
-					'base/Settings',
-					'base/User',
-					'helpers/DomHelper',
-					'helpers/Keys',
-					'helpers/TypesHelper',
-					'helpers/UIGenerator',
-					'helpers/XhrWrapper',
-					'devices/canvas/Stretcher',
-					'devices/canvas/Painter',
-					'devices/canvas/Canvas',
-					'devices/canvas/CanvasManager',
-                    'objects/containers/Layer',
-                    'objects/containers/ObjectsManager',
-                    'objects/containers/OrdersHash',
-                    'objects/packages/base/model'
-			];
-			this._scriptsToIgnore = params.scriptsToIgnore || [];
-			this._scriptsBase = params.scriptsBase || 'code/';
-			this._packages = params.packages || [
-                'select',
-                'point',
-                'line',
-                'rect',
-                'regpoly'
-			];
-			this._packagesModules = [
-                'model',
-                'view',
-                'controller'
-			];
-			this._packagesBase = params.packagesBase || 'objects/packages/';
-			this._userIdentity = params.userIdentity || 'user';
-			this._window = params.window || window;
-			this.eventsManager.setup(this, this._window);
-			if (!this._internalLoadingComplete && !params.skipInternalLoading) {
-				this._addInternalLoadListeners(params.disallowUserInit, params.listeners || {});
-				this._bindInternalLoadToWindowLoad();
+	        _styles = params.styles || _styles;
+	        _stylesToIgnore = params.stylesToIgnore || _stylesToIgnore;
+	        _stylesBase = params.stylesBase || _stylesBase;
+	        _scripts = params.scripts || _scripts;
+	        _scriptsToIgnore = params.scriptsToIgnore || _scriptsToIgnore;
+	        _scriptsBase = params.scriptsBase || _scriptsBase;
+			_packages = params.packages || _packages;
+			_packagesModules = params.packagesModules || _packagesModules;
+			_packagesBase = params.packagesBase || _packagesBase;
+			_userIdentity = params.userIdentity || _userIdentity;
+			_window = params.window || _window;
+			this.eventsManager.setup();
+			if (!_internalLoadingComplete && !params.skipInternalLoading) {
+				_addInternalLoadListeners(params.disallowUserInit, params.listeners || {});
+				_bindInternalLoadToWindowLoad();
 			}
 		},
 
 		DOM: null,
 		UI: null,
 		XHR: null,
-		debugMode: true,
-		loadedScriptsCounter: 0,
 
 		//+++constants+++
 		stamp: '$legally_created_object$',
@@ -72,66 +125,21 @@
 		},
 		//---constants---
 
-		_internalLoadingComplete: false,
-
-		_addInternalLoadListeners: function (disallowUserInit, listeners) {
-			var eventsManager = this.eventsManager,
-				eventName, eventListeners, eventListenersCount, i;
-			eventsManager.add(this, 'load', function () { self.extend(self, new self.TypesHelper()); });
-			eventsManager.add(this, 'load', function () { self.DOM = new self.DomHelper(self._window); });
-			eventsManager.add(this, 'load', function () { self.UI = new self.UIGenerator(true); });
-			eventsManager.add(this, 'load', function () { self.XHR = new self.XhrWrapper(); });
-			if (!disallowUserInit) {
-				eventsManager.add(this, 'load', function () { self.initUser(self._window); });
-			}
-			for (eventName in listeners) {
-				eventListeners = listeners[eventName];
-				eventListenersCount = eventListeners.length;
-				for (i = 0; i < eventListenersCount; i++) {
-					eventsManager.add(this, eventName, eventListeners[i]);
-				}
-			}
-		},
-		_bindInternalLoadToWindowLoad: function () {
-			var onloadHandler = function () {
-					if (!self.allScriptsLoaded()) {
-						return self.defer(onloadHandler, 0);
-					}
-					self.eventsManager.fire(self, 'load');
-					self._internalLoadingComplete = true;
-				},
-				loadScriptsAndFireSelfLoad = function () {
-				    self.loadAllStyles();
-				    self.loadAllScripts();
-				    self.loadAllPackages();
-					onloadHandler();
-				};
-			if ('complete' !== this._window.document.readyState) {
-				this._window.addEventListener('load', loadScriptsAndFireSelfLoad, false);
-			} else {
-				loadScriptsAndFireSelfLoad();
-			}
-		},
-
 		eventsManager: {
 			//private API
-			_GL: null,
 			_methodTriggeredId: '',
 			_methodTriggeredComment: '',
 			_typeNamePrefix: 'ON_',
 			_getFullTypeName: function (type) {
 				return this._typeNamePrefix + type.toUpperCase();
 			},
-			_window: null,
 			//public API
-			setup: function (glObj, winObj) {
-				this._GL = glObj;
-				this._window = winObj || window;
-				this._methodTriggeredId = 'triggered_' + glObj.generateUniqueId();
+			setup: function () {
+				this._methodTriggeredId = 'triggered_' + self.generateUniqueId();
 				this._methodTriggeredComment = '/*' + this._methodTriggeredId + '*/';
 			},
 			add: function (target, type, listener) {
-				var listenerId = this._GL.generateUniqueId();
+				var listenerId = self.generateUniqueId();
 				type = this._getFullTypeName(type);
 				target.listeners = target.listeners || {};
 				target.listeners[type] = target.listeners[type] || {};
@@ -148,7 +156,7 @@
 				var methodText = 'var result = (' + this._methodTriggeredComment + target[methodName].toString() + this._methodTriggeredComment + ').apply(this, arguments);\n' +
 					'GL.eventsManager.fire(this, \'' + methodName + '\', arguments);\n';
 				'return result;';
-				target[methodName] = new this._window.Function(methodText);
+				target[methodName] = new _window.Function(methodText);
 				target[this._methodTriggeredId] = target[this._methodTriggeredId] || {};
 				target[this._methodTriggeredId][methodName] = true;
 			},
@@ -180,23 +188,19 @@
 					}
 				}
 			},
-			fire: function (target, type, args, windowObj) {
+			fire: function (target, type, args) {
 				var listenerId,
 					listeners,
 					event;
 				if (!target || !target.listeners || !type || !(listeners = target.listeners[this._getFullTypeName(type)])) {
 					return;
 				}
-				if (windowObj && windowObj !== this._window) {
-					delete this._window;
-					this._window = windowObj;
-				}
 				type = type.toLowerCase();
 				event = {
 					type: type,
 					target: target,
 					arguments: args,
-					window: this._window,
+					window: _window,
 					allowPropagate: true,
 					stop: function () {
 						this.allowPropagate = false;
@@ -214,17 +218,17 @@
 		},
 
 		allScriptsLoaded: function () {
-			return (this.loadedScriptsCounter === (this._scripts.length + (this._packages.length * this._packagesModules.length)));
+		    return (_loadedScriptsCounter === (_scripts.length + (_packages.length * _packagesModules.length)));
 		},
 
 		initUser: function (aWindow) {
 			var userDefaultProps = { mode: this.getDefaultMode() };
-			aWindow = aWindow || this._window || window;
-			aWindow[this._userIdentity] = new this.User(userDefaultProps);
+			aWindow = aWindow || _window || window;
+			aWindow[_userIdentity] = new this.User(userDefaultProps);
 		},
 
 		getUser: function () {
-			return this._window[this._userIdentity];
+			return _window[_userIdentity];
 		},
 
 		getDefaultMode: function (inUpperCase) {
@@ -232,42 +236,42 @@
 		},
 
 		defer: function (/*Function/TextToEval, delayTimeInMs*/) {
-			return this._window.setTimeout.apply(this._window, arguments);
+			return _window.setTimeout.apply(_window, arguments);
 		},
 
 		loadStyle: function (stylePath, fromBase) {
 		    var element;
-		    if (stylePath && (-1 === this._stylesToIgnore.indexOf(stylePath))) {
-		        element = this._window.document.createElement('link');
+		    if (stylePath && (-1 === _stylesToIgnore.indexOf(stylePath))) {
+		        element = _window.document.createElement('link');
 		        element.setAttribute('rel', 'stylesheet');
 		        element.setAttribute('type', 'text/css');
-		        element.setAttribute('href', (fromBase ? this._stylesBase : '') + stylePath + '.css');
-		        this._window.document.head.appendChild(element);
+		        element.setAttribute('href', (fromBase ? _stylesBase : '') + stylePath + '.css');
+		        _window.document.head.appendChild(element);
 		    }
 		},
 
 		getStylesBase: function () {
-		    return this._stylesBase;
+		    return _stylesBase;
 		},
 
 		setStylesBase: function (value) {
 		    if (typeof value === 'string') {
-		        this._stylesBase = value;
+		        _stylesBase = value;
 		    }
 		},
 
 		ignoreStyle: function (path) {
-		    this._stylesToIgnore.push(path);
+		    _stylesToIgnore.push(path);
 		},
 
 		dontIgnoreStyle: function (path) {
-		    this._stylesToIgnore.slice(this._stylesToIgnore.indexOf(path), 1);
+		    _stylesToIgnore.slice(_stylesToIgnore.indexOf(path), 1);
 		},
 
 		loadAllStyles: function () {
 		    var i;
-		    for (i = 0; i < this._styles.length; i++) {
-		        this.loadStyle(this._styles[i], true);
+		    for (i = 0; i < _styles.length; i++) {
+		        this.loadStyle(_styles[i], true);
 		    }
 		    for (i = 0; i < arguments.length; i++) {
 		        this.loadStyle(arguments[i].path, arguments[i].fromBase);
@@ -276,37 +280,37 @@
 
 		loadScript: function (scriptPath, fromBase) {
 			var element;
-			if (scriptPath && (-1 === this._scriptsToIgnore.indexOf(scriptPath))) {
-				element = this._window.document.createElement('script');
+			if (scriptPath && (-1 === _scriptsToIgnore.indexOf(scriptPath))) {
+				element = _window.document.createElement('script');
 				element.setAttribute('type', 'text/javascript');
-				element.setAttribute('src', (fromBase ? this._scriptsBase : '') + scriptPath + '.js');
-				element.addEventListener('load', function () { self.loadedScriptsCounter++; }, false);
-				this._window.document.head.appendChild(element);
+				element.setAttribute('src', (fromBase ? _scriptsBase : '') + scriptPath + '.js');
+				element.addEventListener('load', function () { _loadedScriptsCounter++; }, false);
+				_window.document.head.appendChild(element);
 			}
 		},
 
 		getScriptsBase: function () {
-			return this._scriptsBase;
+			return _scriptsBase;
 		},
 
 		setScriptsBase: function (value) {
 			if (typeof value === 'string') {
-				this._scriptsBase = value;
+				_scriptsBase = value;
 			}
 		},
 
 		ignoreScript: function (path) {
-			this._scriptsToIgnore.push(path);
+			_scriptsToIgnore.push(path);
 		},
 
 		dontIgnoreScript: function (path) {
-			this._scriptsToIgnore.slice(this._scriptsToIgnore.indexOf(path), 1);
+			_scriptsToIgnore.slice(_scriptsToIgnore.indexOf(path), 1);
 		},
 
 		loadAllScripts: function () {
 			var i;
-			for (i = 0; i < this._scripts.length; i++) {
-				this.loadScript(this._scripts[i], true);
+			for (i = 0; i < _scripts.length; i++) {
+				this.loadScript(_scripts[i], true);
 			}
 			for (i = 0; i < arguments.length; i++) {
 				this.loadScript(arguments[i].path, arguments[i].fromBase);
@@ -314,27 +318,27 @@
 		},
 
 		loadPackage: function (packageName) {
-		    var packagePath = this._packagesBase + packageName + '/',
+		    var packagePath = _packagesBase + packageName + '/',
                 i;
-		    for (i = 0; i < this._packagesModules.length; i++) {
-		        this.loadScript(packagePath + this._packagesModules[i], true);
+		    for (i = 0; i < _packagesModules.length; i++) {
+		        this.loadScript(packagePath + _packagesModules[i], true);
 		    }
 		},
 
 		getPackagesBase: function () {
-		    return this._packagesBase;
+		    return _packagesBase;
 		},
 
 		setPackagesBase: function (value) {
 		    if (typeof value === 'string') {
-		        this._packagesBase = value;
+		        _packagesBase = value;
 		    }
 		},
 
 		loadAllPackages: function () {
 		    var i;
-		    for (i = 0; i < this._packages.length; i++) {
-		        this.loadPackage(this._packages[i], true);
+		    for (i = 0; i < _packages.length; i++) {
+		        this.loadPackage(_packages[i], true);
 		    }
 		    for (i = 0; i < arguments.length; i++) {
 		        this.loadPackage(arguments[i].path, arguments[i].fromBase);
@@ -444,7 +448,7 @@
 
 		raiseException: function (error, message, description) {
 			var text = error + ': ' + message + ((description && typeof description === 'string') && ('\nDescription: ' + description));
-			if (this.debugMode && confirm(text + '\nDebug it?')) {
+			if (_debugMode && confirm(text + '\nDebug it?')) {
 				debugger;
 			}
 		}
