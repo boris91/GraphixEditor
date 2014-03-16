@@ -8,41 +8,41 @@
                 'common'
 	        ];
 	        this._stylesToIgnore = params.stylesToIgnore || [];
-	        this._stylesBase = params.stylesBase || 'Styles/';
-			this._scripts = params.scripts || [
-					'TypesHelper',
-					'Settings',
-					'DomHelper',
-					'UIGenerator',
-					'XhrWrapper',
-					'Keys',
-					'Devices/Canvas/Stretcher',
-					'Devices/Canvas/Painter',
-					'Devices/Canvas/Canvas',
-					'Devices/Canvas/CanvasManager',
-					'Models/Helpers/Select',
-					'Models/Objects/Base',
-					'Models/Objects/Point',
-					'Models/Objects/Line',
-					'Models/Objects/Rect',
-					'Models/Objects/Regpoly',
-					'Models/Objects/Manager/OrdersHash',
-					'Models/Objects/Manager/Layer',
-					'Models/Objects/Manager/ObjectsManager',
-					'Views/Helpers/Select',
-					'Views/Objects/Point',
-					'Views/Objects/Line',
-					'Views/Objects/Rect',
-					'Views/Objects/Regpoly',
-					'Controllers/Helpers/Select',
-					'Controllers/Objects/Point',
-					'Controllers/Objects/Line',
-					'Controllers/Objects/Rect',
-					'Controllers/Objects/Regpoly',
-					'User'
+	        this._stylesBase = params.stylesBase || 'styles/';
+	        this._scripts = params.scripts || [
+					'base/Settings',
+					'base/User',
+					'helpers/DomHelper',
+					'helpers/Keys',
+					'helpers/TypesHelper',
+					'helpers/UIGenerator',
+					'helpers/XhrWrapper',
+					'devices/canvas/Stretcher',
+					'devices/canvas/Painter',
+					'devices/canvas/Canvas',
+					'devices/canvas/CanvasManager',
+                    'objects/containers/Layer',
+                    'objects/containers/ObjectsManager',
+                    'objects/containers/OrdersHash',
+                    'objects/packages/select/model',
+                    'objects/packages/select/view',
+                    'objects/packages/select/controller',
+                    'objects/packages/base/model',
+                    'objects/packages/point/model',
+                    'objects/packages/point/view',
+                    'objects/packages/point/controller',
+                    'objects/packages/line/model',
+                    'objects/packages/line/view',
+                    'objects/packages/line/controller',
+                    'objects/packages/rect/model',
+                    'objects/packages/rect/view',
+                    'objects/packages/rect/controller',
+                    'objects/packages/regpoly/model',
+                    'objects/packages/regpoly/view',
+                    'objects/packages/regpoly/controller'
 			];
 			this._scriptsToIgnore = params.scriptsToIgnore || [];
-			this._scriptsBase = params.scriptsBase || '';
+			this._scriptsBase = params.scriptsBase || 'code/';
 			this._userIdentity = params.userIdentity || 'user';
 			this._window = params.window || window;
 			this.eventsManager.setup(this, this._window);
