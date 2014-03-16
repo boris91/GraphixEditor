@@ -1,5 +1,18 @@
 ﻿(function () {
     var self = null,
+        STAMP = '$legally_created_object$',
+        MODES = {
+            NONE: 'none',
+            SELECT: 'select',
+            POINT: 'point',
+            LINE: 'line',
+            RECT: 'rect',
+            REGPOLY: 'regpoly'
+        },
+        LINE_TYPES = {
+            SOLID: 'Solid',
+            DASHED: 'Dashed'
+        },
         _styles = [
             'common'
         ],
@@ -108,22 +121,6 @@
 		DOM: null,
 		UI: null,
 		XHR: null,
-
-		//+++constants+++
-		stamp: '$legally_created_object$',
-		ModesEnum: {
-			NONE: 'none',
-			SELECT: 'select',
-			POINT: 'point',
-			LINE: 'line',
-			RECT: 'rect',
-			REGPOLY: 'regpoly'
-		},
-		LineTypesEnum: {
-			SOLID: 'Solid',
-			DASHED: 'Dashed'
-		},
-		//---constants---
 
 		eventsManager: {
 			//private API
@@ -452,5 +449,23 @@
 				debugger;
 			}
 		}
-	};
+    };
+
+    Object.defineProperties(self, {
+        stamp: {
+            get: function () {
+                return STAMP;
+            }
+        },
+        ModesEnum: {
+            get: function () {
+                return MODES;
+            }
+        },
+        LineTypesEnum: {
+            get: function () {
+                return LINE_TYPES;
+            }
+        }
+    });
 })();
