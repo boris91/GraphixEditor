@@ -24,25 +24,23 @@
                     'objects/containers/Layer',
                     'objects/containers/ObjectsManager',
                     'objects/containers/OrdersHash',
-                    'objects/packages/select/model',
-                    'objects/packages/select/view',
-                    'objects/packages/select/controller',
-                    'objects/packages/base/model',
-                    'objects/packages/point/model',
-                    'objects/packages/point/view',
-                    'objects/packages/point/controller',
-                    'objects/packages/line/model',
-                    'objects/packages/line/view',
-                    'objects/packages/line/controller',
-                    'objects/packages/rect/model',
-                    'objects/packages/rect/view',
-                    'objects/packages/rect/controller',
-                    'objects/packages/regpoly/model',
-                    'objects/packages/regpoly/view',
-                    'objects/packages/regpoly/controller'
+                    'objects/packages/base/model'
 			];
 			this._scriptsToIgnore = params.scriptsToIgnore || [];
 			this._scriptsBase = params.scriptsBase || 'code/';
+			this._packages = params.packages || [
+                'select',
+                'point',
+                'line',
+                'rect',
+                'regpoly'
+			];
+			this._packagesModules = [
+                'model',
+                'view',
+                'controller'
+			];
+			this._packagesBase = params.packagesBase || 'objects/packages/';
 			this._userIdentity = params.userIdentity || 'user';
 			this._window = params.window || window;
 			this.eventsManager.setup(this, this._window);
@@ -104,7 +102,8 @@
 				},
 				loadScriptsAndFireSelfLoad = function () {
 				    self.loadAllStyles();
-					self.loadAllScripts();
+				    self.loadAllScripts();
+				    self.loadAllPackages();
 					onloadHandler();
 				};
 			if ('complete' !== this._window.document.readyState) {
@@ -215,7 +214,7 @@
 		},
 
 		allScriptsLoaded: function () {
-			return (this.loadedScriptsCounter === this._scripts.length);
+			return (this.loadedScriptsCounter === (this._scripts.length + (this._packages.length * this._packagesModules.length)));
 		},
 
 		initUser: function (aWindow) {
@@ -312,6 +311,34 @@
 			for (i = 0; i < arguments.length; i++) {
 				this.loadScript(arguments[i].path, arguments[i].fromBase);
 			}
+		},
+
+		loadPackage: function (packageName) {
+		    var packagePath = this._packagesBase + packageName + '/',
+                i;
+		    for (i = 0; i < this._packagesModules.length; i++) {
+		        this.loadScript(packagePath + this._packagesModules[i], true);
+		    }
+		},
+
+		getPackagesBase: function () {
+		    return this._packagesBase;
+		},
+
+		setPackagesBase: function (value) {
+		    if (typeof value === 'string') {
+		        this._packagesBase = value;
+		    }
+		},
+
+		loadAllPackages: function () {
+		    var i;
+		    for (i = 0; i < this._packages.length; i++) {
+		        this.loadPackage(this._packages[i], true);
+		    }
+		    for (i = 0; i < arguments.length; i++) {
+		        this.loadPackage(arguments[i].path, arguments[i].fromBase);
+		    }
 		},
 
 		uniqueIdsGenerator: (function () {
