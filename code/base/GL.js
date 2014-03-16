@@ -18,10 +18,10 @@
 		    'devices/canvas/Painter',
 		    'devices/canvas/Canvas',
 		    'devices/canvas/CanvasManager',
+            'objects/base/model',
             'objects/containers/Layer',
             'objects/containers/ObjectsManager',
-            'objects/containers/OrdersHash',
-            'objects/packages/base/model'
+            'objects/containers/OrdersHash'
         ],
         _scriptsToIgnore = [],
         _scriptsBase = 'code/',
