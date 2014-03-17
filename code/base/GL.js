@@ -26,7 +26,7 @@
 		    'helpers/Keys',
 		    'helpers/TypesHelper',
 		    'helpers/UIGenerator',
-		    'helpers/XhrWrapper',
+		    'helpers/XhrManager',
 		    'devices/canvas/Stretcher',
 		    'devices/canvas/Painter',
 		    'devices/canvas/Canvas',
@@ -63,7 +63,7 @@
             eventsManager.add(self, 'load', function () { self.extend(self, new self.TypesHelper()); });
             eventsManager.add(self, 'load', function () { self.DOM = new self.DomHelper(_window); });
             eventsManager.add(self, 'load', function () { self.UI = new self.UIGenerator(true); });
-            eventsManager.add(self, 'load', function () { self.XHR = new self.XhrWrapper(); });
+            eventsManager.add(self, 'load', function () { self.XHR = new self.XhrManager(); });
             if (!disallowUserInit) {
                 eventsManager.add(self, 'load', function () { self.initUser(_window); });
             }
