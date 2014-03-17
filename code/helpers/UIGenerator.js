@@ -1,12 +1,10 @@
 ﻿GL.UIGenerator = function GL_UIGenerator(autoGenerate) {
 	var _domHelper = GL.DOM,
-		_formElement = null,
 		_totalLayer = null,
 		_self = {
 		    //private API
-		    _createFormAndTotalLayer: function () {
-			    _formElement = _domHelper.add('form', { attributes: { name: 'myForm' } });
-			    _totalLayer = _domHelper.add('div', { attributes: { id: 'totalLayer', 'class': 'forTotalLayer' } }, _formElement);
+		    _getTotalLayer: function () {
+			    _totalLayer = _domHelper.byId('totalLayer');
 		    },
 		    _createCanvas: function () {
 			    _domHelper.add('div', { attributes: { id: 'undercanvasLayer', 'class': 'forUndercanvasLayer' } }, _totalLayer);
@@ -109,7 +107,7 @@
 		    },
 		    //public API
 		    createAll: function () {
-			    this._createFormAndTotalLayer();
+			    this._getTotalLayer();
 			    this._createCanvas();
 			    this._createTools();
 			    this._createSettings();
