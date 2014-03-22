@@ -73,14 +73,14 @@ GL.LayerModel.prototype = {
 
 	getAttributes: function () {
 		return {
-				type: this._type,
-				id: this._id,
-				name: this._name,
-				createdOn: new Date(this._createdOn),
-				visible: this._visible,
-				active: this._active,
-				children: this._children
-			};
+			type: this._type,
+			id: this._id,
+			name: this._name,
+			createdOn: new Date(this._createdOn),
+			visible: this._visible,
+			active: this._active,
+			children: this._children
+		};
 	},
 
 	getCount: function () {
@@ -131,7 +131,7 @@ GL.LayerModel.prototype = {
 	},
 
 	allowSubLayers: function (value) {
-		if('boolean' !== typeof value) {
+		if ('boolean' !== typeof value) {
 			this._allowSubLayers = this._allowSubLayers ? false : true;
 		} else {
 			this._allowSubLayers = value;
@@ -143,7 +143,7 @@ GL.LayerModel.prototype = {
 	},
 
 	toggleVisibility: function (value) {
-		if('boolean' !== typeof value) {
+		if ('boolean' !== typeof value) {
 			this._visible = this._visible ? false : true;
 		} else {
 			this._visible = value;
@@ -151,7 +151,7 @@ GL.LayerModel.prototype = {
 	},
 
 	toggleActivity: function (value) {
-		if('boolean' !== typeof value) {
+		if ('boolean' !== typeof value) {
 			this._active = this._active ? false : true;
 		} else {
 			this._active = value;
@@ -189,17 +189,17 @@ GL.LayerModel.prototype = {
 
 	getData: function (asObject) {
 		var jsonObject = {
-				type: this._type,
-				id: this._id,
-				name: this._name,
-				createdOn: this._createdOn,
-				visible: this._visible,
-				active: this._active,
-				allowSubLayers: this._allowSubLayers,
-				children: this._children,
-				childrenOrder: this._childrenOrder.getAll(),
-				jsoned: true
-			};
+			type: this._type,
+			id: this._id,
+			name: this._name,
+			createdOn: this._createdOn,
+			visible: this._visible,
+			active: this._active,
+			allowSubLayers: this._allowSubLayers,
+			children: this._children,
+			childrenOrder: this._childrenOrder.getAll(),
+			jsoned: true
+		};
 		return asObject ? jsonObject : JSON.stringify(jsonObject);
 	}
 };

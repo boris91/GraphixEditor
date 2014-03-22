@@ -2,12 +2,12 @@
 GL.PointModel = function GL_PointModel(attributes) {
 	attributes = attributes ? ('string' === typeof attributes ? JSON.parse(attributes) : attributes) : {};
 	GL.ObjectBase.call(this, GL.extend(attributes, { type: 'point' }));
-	
-	this._x = attributes.x || -attributes.radius*2 || -2;
-	this._y = attributes.y || -attributes.radius*2 || -2;
-	this._radius = attributes.radius+1/2 || 1;
-	
-	GL.extend(	this._getters,
+
+	this._x = attributes.x || -attributes.radius * 2 || -2;
+	this._y = attributes.y || -attributes.radius * 2 || -2;
+	this._radius = attributes.radius + 1 / 2 || 1;
+
+	GL.extend(this._getters,
 				{
 					x: 'getX',
 					y: 'getY',
@@ -16,8 +16,8 @@ GL.PointModel = function GL_PointModel(attributes) {
 					attributes: 'getAttributes',
 					data: 'getData'
 				});
-	
-	GL.extend(	this._setters,
+
+	GL.extend(this._setters,
 				{
 					x: 'setX',
 					y: 'setY',
@@ -57,7 +57,7 @@ GL.PointModel.prototype = {
 		};
 	},
 	setX: function (X) {
-		if(typeof X === 'number' && !isNaN(X)) {
+		if (typeof X === 'number' && !isNaN(X)) {
 			this._x = X;
 		}
 		else {
@@ -65,7 +65,7 @@ GL.PointModel.prototype = {
 		}
 	},
 	setY: function (Y) {
-		if(typeof Y === 'number' && !isNaN(Y)) {
+		if (typeof Y === 'number' && !isNaN(Y)) {
 			this._y = Y;
 		}
 		else {
@@ -73,7 +73,7 @@ GL.PointModel.prototype = {
 		}
 	},
 	moveTo: function (X, Y) {
-		if(typeof X === 'number' && typeof Y === 'number' &&  !isNaN(X) &&  !isNaN(Y)) {
+		if (typeof X === 'number' && typeof Y === 'number' && !isNaN(X) && !isNaN(Y)) {
 			this._x = X;
 			this._y = Y;
 		}
@@ -82,7 +82,7 @@ GL.PointModel.prototype = {
 		}
 	},
 	setRadius: function (r) {
-		if(typeof r === 'number' && r >= 0) {
+		if (typeof r === 'number' && r >= 0) {
 			this._radius = r;
 		}
 		else {
@@ -90,7 +90,7 @@ GL.PointModel.prototype = {
 		}
 	},
 	shift: function (X, Y) {
-		if(typeof X === 'number' && typeof Y === 'number' &&  !isNaN(X) &&  !isNaN(Y)) {
+		if (typeof X === 'number' && typeof Y === 'number' && !isNaN(X) && !isNaN(Y)) {
 			this._x += X;
 			this._y += Y;
 		}
@@ -99,9 +99,9 @@ GL.PointModel.prototype = {
 		}
 	},
 	resize: function (X, Y) {
-		if(typeof X === 'number' && typeof Y === 'number' &&  !isNaN(X) &&  !isNaN(Y)) {
-			if(this._radius + X/2 > 0 && this._radius + Y/2 > 0) {
-				this._radius += (X || Y)/2;
+		if (typeof X === 'number' && typeof Y === 'number' && !isNaN(X) && !isNaN(Y)) {
+			if (this._radius + X / 2 > 0 && this._radius + Y / 2 > 0) {
+				this._radius += (X || Y) / 2;
 			}
 		}
 		else {
@@ -111,12 +111,12 @@ GL.PointModel.prototype = {
 	rotate: function (angle, centerX, centerY) {
 		var X,
 			Y;
-		if(typeof angle === 'number' && typeof centerX === 'number' && typeof centerY === 'number' &&
+		if (typeof angle === 'number' && typeof centerX === 'number' && typeof centerY === 'number' &&
 		   !isNaN(angle) && !isNaN(centerX) && !isNaN(centerY)) {
 			if (centerX !== this._x || centerY !== this._y) {
-				angle *= Math.PI/180;
-				X = this._x*Math.cos(angle) - this._y*Math.sin(angle) - centerX*(Math.cos(angle)-1) + centerY*Math.sin(angle);
-				Y = this._x*Math.sin(angle) + this._y*Math.cos(angle) - centerX*Math.sin(angle) - centerY*(Math.cos(angle)-1);
+				angle *= Math.PI / 180;
+				X = this._x * Math.cos(angle) - this._y * Math.sin(angle) - centerX * (Math.cos(angle) - 1) + centerY * Math.sin(angle);
+				Y = this._x * Math.sin(angle) + this._y * Math.cos(angle) - centerX * Math.sin(angle) - centerY * (Math.cos(angle) - 1);
 				this._x = X;
 				this._y = Y;
 			}
@@ -128,10 +128,10 @@ GL.PointModel.prototype = {
 
 	getData: function (asObject) {
 		var jsonObject = GL.extend({
-				x: this._x,
-				y: this._y,
-				radius: this._radius
-			},
+			x: this._x,
+			y: this._y,
+			radius: this._radius
+		},
 			this._base.getData.call(this, true));
 		return asObject ? jsonObject : JSON.stringify(jsonObject);
 	}
@@ -140,7 +140,7 @@ GL.PointModel.prototype = {
 
 //GL.inherit(GL.ObjectBase, GL.PointModel);
 (function () {
-	(function inheritObjectBase () {
+	(function inheritObjectBase() {
 		if (!GL.ObjectBase) {
 			GL.defer(inheritObjectBase, 0);
 			return;

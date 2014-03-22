@@ -12,50 +12,50 @@ GL.SelectModel = function (left, top, width, height, visible) {
 GL.SelectModel.prototype = {
 	getAttributes: function () {
 		return {
-				type: this._type,
-				left: this._left,
-				top: this._top,
-				width: this._width,
-				height: this._height,
-				visible: this._visible,
-				tempLeftTop: {
-					x: this._tempLeft,
-					y: this._tempTop
-				}
-			};
+			type: this._type,
+			left: this._left,
+			top: this._top,
+			width: this._width,
+			height: this._height,
+			visible: this._visible,
+			tempLeftTop: {
+				x: this._tempLeft,
+				y: this._tempTop
+			}
+		};
 	},
-	getDiameter: function() {
-		return Math.pow(Math.pow(this._width, 2)+Math.pow(this._height, 2), 0.5);
+	getDiameter: function () {
+		return Math.pow(Math.pow(this._width, 2) + Math.pow(this._height, 2), 0.5);
 	},
-	getLeft: function() {
+	getLeft: function () {
 		return this._left;
 	},
-	getTop: function() {
+	getTop: function () {
 		return this._top;
 	},
-	getRight: function() {
-		return this._left+this._width;
+	getRight: function () {
+		return this._left + this._width;
 	},
-	getBottom: function() {
-		return this._top+this._height;
+	getBottom: function () {
+		return this._top + this._height;
 	},
-	getWidth: function() {
+	getWidth: function () {
 		return this._width;
 	},
-	getHeight: function() {
+	getHeight: function () {
 		return this._height;
 	},
-	getTempLeft: function() {
+	getTempLeft: function () {
 		return this._tempLeft;
 	},
-	getTempTop: function() {
+	getTempTop: function () {
 		return this._tempTop;
 	},
 	getTempLeftTop: function () {
 		return {
-				x: this._tempLeft,
-				y: this._tempTop
-			};
+			x: this._tempLeft,
+			y: this._tempTop
+		};
 	},
 	setRegion: function (region) {
 		this._left = region.l;
@@ -63,7 +63,7 @@ GL.SelectModel.prototype = {
 		this._width = region.w;
 		this._height = region.h;
 	},
-	getRegion: function() {
+	getRegion: function () {
 		return {
 			l: this._left,
 			t: this._top,
@@ -71,17 +71,17 @@ GL.SelectModel.prototype = {
 			h: this._height
 		};
 	},
-	getCenter: function() {
+	getCenter: function () {
 		return {
-			x: this._left + this._width/2,
-			y: this._top + this._height/2
+			x: this._left + this._width / 2,
+			y: this._top + this._height / 2
 		};
 	},
-	isVisible: function() {
+	isVisible: function () {
 		return this._visible;
 	},
-	moveLeftTopTo: function(l, t) {
-		if(typeof l === 'number' && typeof t === 'number' && !isNaN(l) && !isNaN(t)) {
+	moveLeftTopTo: function (l, t) {
+		if (typeof l === 'number' && typeof t === 'number' && !isNaN(l) && !isNaN(t)) {
 			this._left = l;
 			this._top = t;
 		}
@@ -89,8 +89,8 @@ GL.SelectModel.prototype = {
 			GL.raiseException('ERROR', 'Wrong values provided to GL.SelectModel.moveLeftTopTo()-method.');
 		}
 	},
-	moveRightBottomTo: function(r, b) {
-		if(typeof r === 'number' && typeof b === 'number' && r >= this._left && b >= this._top) {
+	moveRightBottomTo: function (r, b) {
+		if (typeof r === 'number' && typeof b === 'number' && r >= this._left && b >= this._top) {
 			this._width = r - this._left;
 			this._height = b - this._top;
 		}
@@ -98,8 +98,8 @@ GL.SelectModel.prototype = {
 			GL.raiseException('ERROR', 'Wrong values provided to GL.SelectModel.moveRightBottomTo()-method.');
 		}
 	},
-	moveTempLeftTopTo: function(X1, Y1) {
-		if(typeof X1 === 'number' && typeof Y1 === 'number' && !isNaN(X1) && !isNaN(Y1)) {
+	moveTempLeftTopTo: function (X1, Y1) {
+		if (typeof X1 === 'number' && typeof Y1 === 'number' && !isNaN(X1) && !isNaN(Y1)) {
 			this._tempLeft = X1;
 			this._tempTop = Y1;
 		}
@@ -108,13 +108,13 @@ GL.SelectModel.prototype = {
 		}
 	},
 	moveTempRightBottomTo: function (r, b) {
-		if(typeof r === 'number' && typeof b === 'number' && !isNaN(r) && !isNaN(b)) {
-			if(this._tempLeft > r) {
+		if (typeof r === 'number' && typeof b === 'number' && !isNaN(r) && !isNaN(b)) {
+			if (this._tempLeft > r) {
 				this._left = r;
 				r = this._tempLeft;
 				this._tempLeft = this._left;
 			}
-			if(this._tempTop > b) {
+			if (this._tempTop > b) {
 				this._top = b;
 				b = this._tempTop;
 				this._tempTop = this._top;
@@ -128,16 +128,16 @@ GL.SelectModel.prototype = {
 			GL.raiseException('ERROR', 'Wrong values provided to GL.SelectModel.moveTempRightBottomTo()-method.');
 		}
 	},
-	setWidth: function(w) {
-		if(typeof w === 'number' && w >= 0) {
+	setWidth: function (w) {
+		if (typeof w === 'number' && w >= 0) {
 			this._width = w;
 		}
 		else {
 			GL.raiseException('ERROR', 'Wrong value provided to GL.SelectModel.setWidth()-method.');
 		}
 	},
-	setHeight: function(h) {
-		if(typeof h === 'number' && h >= 0) {
+	setHeight: function (h) {
+		if (typeof h === 'number' && h >= 0) {
 			this._height = h;
 		}
 		else {
@@ -161,8 +161,8 @@ GL.SelectModel.prototype = {
 			this._height = region.h;
 		}
 	},
-	toggleVisibility: function(value) {
-		if(typeof value !== 'boolean') {
+	toggleVisibility: function (value) {
+		if (typeof value !== 'boolean') {
 			this._visible = this._visible ? false : true;
 		}
 		else {

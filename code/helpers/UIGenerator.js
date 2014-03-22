@@ -2,79 +2,79 @@
 	var _domHelper = GL.DOM,
 		_totalLayer = null,
 		_self = {
-		    //private API
-		    _getTotalLayer: function () {
-			    _totalLayer = _domHelper.byId('totalLayer');
-		    },
-		    _createCanvas: function () {
-			    _domHelper.add('div', { attributes: { id: 'undercanvasLayer', 'class': 'forUndercanvasLayer' } }, _totalLayer);
-		    },
-		    _createTools: function () {
-			    var modes = GL.ModesEnum,
+			//private API
+			_getTotalLayer: function () {
+				_totalLayer = _domHelper.byId('totalLayer');
+			},
+			_createCanvas: function () {
+				_domHelper.add('div', { attributes: { id: 'undercanvasLayer', 'class': 'forUndercanvasLayer' } }, _totalLayer);
+			},
+			_createTools: function () {
+				var modes = GL.ModesEnum,
 				    toolButtonPrefix = 'btn_tool_',
 				    _prevToolName = '',//will be used in closure
 				    toolsDiv = _domHelper.add('div', {
-					    attributes: {
-						    id: 'div_tools',
-						    style: 'position:absolute; top:400px;'
-					    }
+				    	attributes: {
+				    		id: 'div_tools',
+				    		style: 'position:absolute; top:400px;'
+				    	}
 				    }, _totalLayer),
 				    toolParams = {
-					    attributes: {
-						    type: 'button',
-						    style: 'left:auto;'
-					    },
-					    listeners: {
-						    'click': [function (event) {
-							    var newToolName = event.target.value,
+				    	attributes: {
+				    		type: 'button',
+				    		style: 'left:auto;'
+				    	},
+				    	listeners: {
+				    		'click': [function (event) {
+				    			var newToolName = event.target.value,
 								    userObj = GL.getUser();
-							    if (_prevToolName) {
-								    _domHelper.byId(toolButtonPrefix + _prevToolName).disabled = '';
-							    }
-							    _prevToolName = newToolName;
-							    userObj.toggleMode(modes[newToolName]);
-							    _domHelper.byId(toolButtonPrefix + newToolName).disabled = 'disabled';
-						    }]
-					    }
+				    			if (_prevToolName) {
+				    				_domHelper.byId(toolButtonPrefix + _prevToolName).disabled = '';
+				    			}
+				    			_prevToolName = newToolName;
+				    			userObj.toggleMode(modes[newToolName]);
+				    			_domHelper.byId(toolButtonPrefix + newToolName).disabled = 'disabled';
+				    		}]
+				    	}
 				    },
 				    toolParamsAttrs = toolParams.attributes,
 				    i;
-			    for (i in modes) {
-				    toolParamsAttrs.id = toolButtonPrefix + i;
-				    toolParamsAttrs.value = i;
-				    _domHelper.add('input', toolParams, toolsDiv);
-			    }
-			    _prevToolName = GL.getDefaultMode(true);
-			    _domHelper.byId(toolButtonPrefix + _prevToolName).disabled = 'disabled';
-		    },
-		    _createSettings: function () {
-			    var settingsDiv = _domHelper.add('div', {
-					    attributes: {
-						    id: 'div_settings',
-						    style: 'position:absolute; top:422px;'
-					    }
-				    }, _totalLayer),
+				for (i in modes) {
+					toolParamsAttrs.id = toolButtonPrefix + i;
+					toolParamsAttrs.value = i;
+					_domHelper.add('input', toolParams, toolsDiv);
+				}
+				_prevToolName = GL.getDefaultMode(true);
+				_domHelper.byId(toolButtonPrefix + _prevToolName).disabled = 'disabled';
+			},
+			_createSettings: function () {
+				var settingsDiv = _domHelper.add('div', {
+					attributes: {
+						id: 'div_settings',
+						style: 'position:absolute; top:422px;'
+					}
+				}, _totalLayer),
 				    getParam = function (type, min, max, step, value, title, style, methodName) {
-					    var targetProp = ('checkbox' === type) ? 'checked' : 'value',
+				    	var targetProp = ('checkbox' === type) ? 'checked' : 'value',
 						    param = {
-							    attributes: { type: type, min: min, max: max, step: step, value: value, title: title, style: 'left:auto; ' + style },
-							    listeners: {
-								    'change': [function (event) {
-									    var value = event.target[targetProp],
+						    	attributes: { type: type, min: min, max: max, step: step, value: value, title: title, style: 'left:auto; ' + style },
+						    	listeners: {
+						    		'change': [function (event) {
+						    			var value = event.target[targetProp],
 										    settings = GL.getUser().getSettings();
-									    value = ('color' === type || 'checkbox' === type) ? value : window['range' === type ? "parseFloat" : "parseInt"](value);
-									    settings[methodName](value);
-								    }]
-							    }
+						    			value = ('color' === type || 'checkbox' === type) ? value : window['range' === type ? "parseFloat" : "parseInt"](value);
+						    			settings[methodName](value);
+						    		}]
+						    	}
 						    },
 						    paramAttrs = param.attributes,
 						    i;
-					    for (i in paramAttrs) {
-						    if (undefined === paramAttrs[i]) {
-							    delete paramAttrs[i];
-						    }
-					    }
-					    return param;
+				    	for (i in paramAttrs) {
+				    		if (undefined === paramAttrs[i]) {
+				    			delete paramAttrs[i];
+				    		}
+				    	}
+				    	return param;
 				    },
 				    settingsParams = [
 					    getParam('number', 1, 100, 1, 1, 'Shift factor', 'width:45px;', 'setShiftFactor'),
@@ -93,28 +93,28 @@
 				    ],
 				    settingsCount = settingsParams.length,
 				    i;
-			    for (i = 0; i < settingsCount; i++) {
-				    _domHelper.add('input', settingsParams[i], settingsDiv);
-			    }
-		    },
-		    _createFiles: function () {
-			    var filesDiv = _domHelper.add('div', { attributes: { value: 'Open', style: 'position:absolute; left:400px; top:400px;' } }, _totalLayer);
-			    _domHelper.add('input', { attributes: { type: 'button', value: 'Open', style: 'left:auto;' }, listeners: { 'click': [function (event) { }] } }, filesDiv);
-			    _domHelper.add('input', { attributes: { type: 'button', value: 'Save', style: 'left:auto;' }, listeners: { 'click': [function (event) { }] } }, filesDiv);
-		    },
-		    _createPosLabel: function () {
-			    _domHelper.add('div', { attributes: { id: 'lblPosition', name: 'lblPosition', style: 'position:absolute; left:0px; top:0px;' } }, _totalLayer);
-		    },
-		    //public API
-		    createAll: function () {
-			    this._getTotalLayer();
-			    this._createCanvas();
-			    this._createTools();
-			    this._createSettings();
-			    this._createFiles();
-			    this._createPosLabel();
-		    }
-	    };
+				for (i = 0; i < settingsCount; i++) {
+					_domHelper.add('input', settingsParams[i], settingsDiv);
+				}
+			},
+			_createFiles: function () {
+				var filesDiv = _domHelper.add('div', { attributes: { value: 'Open', style: 'position:absolute; left:400px; top:400px;' } }, _totalLayer);
+				_domHelper.add('input', { attributes: { type: 'button', value: 'Open', style: 'left:auto;' }, listeners: { 'click': [function (event) { }] } }, filesDiv);
+				_domHelper.add('input', { attributes: { type: 'button', value: 'Save', style: 'left:auto;' }, listeners: { 'click': [function (event) { }] } }, filesDiv);
+			},
+			_createPosLabel: function () {
+				_domHelper.add('div', { attributes: { id: 'lblPosition', name: 'lblPosition', style: 'position:absolute; left:0px; top:0px;' } }, _totalLayer);
+			},
+			//public API
+			createAll: function () {
+				this._getTotalLayer();
+				this._createCanvas();
+				this._createTools();
+				this._createSettings();
+				this._createFiles();
+				this._createPosLabel();
+			}
+		};
 
 	if (autoGenerate) {
 		_self.createAll();

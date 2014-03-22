@@ -32,7 +32,7 @@ GL.ObjectsManager.prototype = {
 				['_trash', 'removed'],
 				['_trash', 'objects'],
 				['_trash', 'parents']
-			],
+		],
 			prop,
 			i,
 			j;

@@ -1,14 +1,14 @@
 GL.RegpolyView = function (regpolyModel, device) {
 
-	this.setModel = function(newModel) {
-		if(newModel) {
+	this.setModel = function (newModel) {
+		if (newModel) {
 			regpolyModel = newModel;
 		}
 		else {
 			GL.raiseException('ERROR', 'Wrong values provided to GL.RegpolyView.setModel()-method.');
 		}
 	};
-	this.getModel = function() {
+	this.getModel = function () {
 		return regpolyModel;
 	};
 	this.fixTempCenter = function (event) {
@@ -23,7 +23,7 @@ GL.RegpolyView = function (regpolyModel, device) {
 			coords = device.getCoords(event.layerX, event.layerY),
 			x = coords.x - (GL.isNumber(attributes.tempCenter.x) ? attributes.tempCenter.x : attributes.center.x),
 			y = coords.y - (GL.isNumber(attributes.tempCenter.y) ? attributes.tempCenter.y : attributes.center.y);
-		if(fore_or_back === 'fore') {
+		if (fore_or_back === 'fore') {
 			this.clear('fore');
 		}
 		x = x < 0 ? -x : x;

@@ -52,10 +52,10 @@ GL.SelectController = function GL_SelectController(selectModel, selectView) {
 	};
 
 	this.attachActions = function () {
-		if(selectModel && selectView) {
+		if (selectModel && selectView) {
 			selectView.unleashParentEvent('mousedown', beginDrawSelect);
 			selectView.unleashParentEvent('mousemove', continueDrawSelect);
-			
+
 			selectView.bindParentEventToFunc('mousedown', beginDrawSelect);
 			this._attached = true;
 		}

@@ -1,14 +1,14 @@
 GL.RectView = function (rectModel, device) {
 
-	this.setModel = function(newModel) {
-		if(newModel) {
+	this.setModel = function (newModel) {
+		if (newModel) {
 			rectModel = newModel;
 		}
 		else {
 			GL.raiseException('ERROR', 'Wrong values provided to GL.RectView.setModel()-method.');
 		}
 	};
-	this.getModel = function() {
+	this.getModel = function () {
 		return rectModel;
 	};
 	this.fixTempLeftTop = function (event) {
@@ -23,11 +23,11 @@ GL.RectView = function (rectModel, device) {
 			attributes = rectModel.getAttributes(),
 			tempLeft = GL.isNumber(attributes.tempLeftTop.x) ? attributes.tempLeftTop.x : attributes.points[0].x,
 			tempTop = GL.isNumber(attributes.tempLeftTop.y) ? attributes.tempLeftTop.y : attributes.points[0].y;
-		attributes.points = [	{ x: tempLeft, y: tempTop },
+		attributes.points = [{ x: tempLeft, y: tempTop },
 								{ x: coords.x, y: tempTop },
 								{ x: coords.x, y: coords.y },
-								{ x: tempLeft, y: coords.y } ];
-		if(fore_or_back === 'fore') {
+								{ x: tempLeft, y: coords.y }];
+		if (fore_or_back === 'fore') {
 			this.clear('fore');
 		}
 		device.draw(attributes, 'fore' === fore_or_back ? device.FORE : device.BACK);

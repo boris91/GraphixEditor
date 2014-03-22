@@ -2,7 +2,7 @@ GL.CanvasManager = function GL_CanvasManager(data) {
 	data = data || {};
 	var self = this;
 
-	this._onRedraw = data.onRedraw || function () {};
+	this._onRedraw = data.onRedraw || function () { };
 
 	this._back = data.back || new GL.Canvas({
 		id: 'canvasBackground',//'back_' + GL.generateUniqueId(),
@@ -29,35 +29,35 @@ GL.CanvasManager = function GL_CanvasManager(data) {
 		connectAll: true
 	});
 	this._stretcher = new GL.Stretcher({
-			onMove: function (moveX, moveY) {
-				self.restore(self.BOTH);
-				self._back.resizeOn(moveX, moveY);
-				return self._fore.resizeOn(moveX, moveY);
-			},
-			onReDraw: self._onRedraw
-		});
+		onMove: function (moveX, moveY) {
+			self.restore(self.BOTH);
+			self._back.resizeOn(moveX, moveY);
+			return self._fore.resizeOn(moveX, moveY);
+		},
+		onReDraw: self._onRedraw
+	});
 
 	//BINDING EVENT LISTENERS [CANVAS MANAGER HANDLE]
-	function zoom (event) {
-		var zoomOut = ('wheelDelta' in event ? -event.wheelDelta/120 : event.detail/3) > 0;
+	function zoom(event) {
+		var zoomOut = ('wheelDelta' in event ? -event.wheelDelta / 120 : event.detail / 3) > 0;
 		self.clear(self.BOTH);
 		self._back.zoomAuto(zoomOut);
 		self._fore.zoomAuto(zoomOut);
 		self._onRedraw();
 	}
-	function drag (event) {
+	function drag(event) {
 		if (('which' in event && event.which === 2) || event.button === 4) {
 			self.moveX = event.layerX;
 			self.moveY = event.layerY;
 		}
 	}
-	function move (event) {
+	function move(event) {
 		var x = self._back.getCoordX(event.layerX).toFixed(2),
 			y = self._back.getCoordY(event.layerY).toFixed(2);
 		GL.DOM.byId('lblPosition').innerHTML = 'POS: ' + x + ', ' + y;
 		if ('moveX' in self && 'moveY' in self) {
-			var moveX = -(event.layerX - self.moveX)/self._back.getScaleX(),
-				moveY = -(event.layerY - self.moveY)/self._back.getScaleY();
+			var moveX = -(event.layerX - self.moveX) / self._back.getScaleX(),
+				moveY = -(event.layerY - self.moveY) / self._back.getScaleY();
 			self.moveX = event.layerX;
 			self.moveY = event.layerY;
 			self.clear(self.BOTH);
@@ -66,7 +66,7 @@ GL.CanvasManager = function GL_CanvasManager(data) {
 			self._onRedraw();
 		}
 	}
-	function drop (event) {
+	function drop(event) {
 		if (('which' in event && event.which === 2) || event.button === 4) {
 			delete self.moveX;
 			delete self.moveY;
@@ -82,24 +82,24 @@ GL.CanvasManager.prototype = {
 	getScale: function () {
 		var scale = this._back.getScale();
 		return {
-				x: scale.x.toFixed(2),
-				y: scale.y.toFixed(2)
-			};
+			x: scale.x.toFixed(2),
+			y: scale.y.toFixed(2)
+		};
 	},
 
 	getShift: function () {
 		var shift = this._back.getScale();
 		return {
-				x: shift.x.toFixed(2),
-				y: shift.y.toFixed(2)
-			};
+			x: shift.x.toFixed(2),
+			y: shift.y.toFixed(2)
+		};
 	},
 
 	getCoords: function (layerX, layerY) {
 		return {
-				x: this._back.getCoordX(layerX),
-				y: this._back.getCoordY(layerY)
-			};
+			x: this._back.getCoordX(layerX),
+			y: this._back.getCoordY(layerY)
+		};
 	},
 
 	getDomParent: function () {

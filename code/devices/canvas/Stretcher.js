@@ -6,7 +6,7 @@ GL.Stretcher = function GL_Stretcher(attributes) {
 	this._y = attributes.y || 350;
 	this._newX = null;
 	this._newY = null;
-	this._div = GL.DOM.add(	'div',
+	this._div = GL.DOM.add('div',
 							{
 								attributes: attributes.forDom || {
 									id: this._id,
@@ -37,16 +37,16 @@ GL.Stretcher = function GL_Stretcher(attributes) {
 										}
 									}
 								});
-	this._onMove = attributes.onMove || function () { return {dx:0, dy:0}; };
-	this._onRedraw = attributes.onReDraw || function () {};
+	this._onMove = attributes.onMove || function () { return { dx: 0, dy: 0 }; };
+	this._onRedraw = attributes.onReDraw || function () { };
 
-	function drag (event) {
+	function drag(event) {
 		if (event.clientX > self._x && event.clientX < (self._x + 15) && event.clientY > self._y && event.clientY < (self._y + 15)) {
 			self.moveX = event.clientX;
 			self.moveY = event.clientY;
 		}
 	}
-	function move (event) {
+	function move(event) {
 		if (event.clientX > self._x && event.clientX < (self._x + 15) && event.clientY > self._y && event.clientY < (self._y + 15)) {
 			self._foreDiv.style.cursor = 'se-resize';
 		} else {
@@ -68,7 +68,7 @@ GL.Stretcher = function GL_Stretcher(attributes) {
 			self._onRedraw();
 		}
 	}
-	function drop (event) {
+	function drop(event) {
 		delete self.moveX;
 		delete self.moveY;
 	}

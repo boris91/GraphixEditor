@@ -1,18 +1,18 @@
 GL.PointView = function (pointModel, device) {
 
-	this.setModel = function(newModel) {
-		if(newModel) {
+	this.setModel = function (newModel) {
+		if (newModel) {
 			pointModel = newModel;
 		}
 		else {
 			GL.raiseException('ERROR', 'Wrong values provided to GL.PointView.setModel()-method.');
 		}
 	};
-	this.getModel = function() {
+	this.getModel = function () {
 		return pointModel;
 	};
 	this.draw = function (fore_or_back, movePoint, event) {
-		if(GL.isNumber(event.clientX) && GL.isNumber(event.clientY) && movePoint) {
+		if (GL.isNumber(event.clientX) && GL.isNumber(event.clientY) && movePoint) {
 			var coords = device.getCoords(event.layerX, event.layerY);
 			pointModel.moveTo(coords.x, coords.y);
 		}

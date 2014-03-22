@@ -9,18 +9,18 @@ GL.Canvas = function GL_Canvas(attributes) {
 	this._shiftY = 0;
 	this._scaleStep = GL.isNumber(attributes.scaleStep) && attributes.scaleStep > 0 && attributes.scaleStep !== 1 ? attributes.scaleStep : 1.1;
 	this._shiftStep = GL.isNumber(attributes.shiftStep) && attributes.shiftStep !== 0 ? attributes.shiftStep : 1;
-	this._domAttributes =  attributes.forDom ? attributes.forDom : {
-			id: this._id,
-			style: {
-				position: 'absolute',
-				left: '250px',
-				top: '50px',
-				backgroundColor: 'rgba(0,0,0,0.01)',
-				border: 'none'
-			},
-			width: '500px',
-			height: '300px'
-		};
+	this._domAttributes = attributes.forDom ? attributes.forDom : {
+		id: this._id,
+		style: {
+			position: 'absolute',
+			left: '250px',
+			top: '50px',
+			backgroundColor: 'rgba(0,0,0,0.01)',
+			border: 'none'
+		},
+		width: '500px',
+		height: '300px'
+	};
 	this._domParent = GL.DOM.byId(attributes.parentId) || document.body;
 	if (!this._context) {
 		if (!this._domAttributes.id) {
@@ -29,16 +29,16 @@ GL.Canvas = function GL_Canvas(attributes) {
 		this._context = GL.DOM.add('canvas', { attributes: this._domAttributes }, this._domParent).getContext('2d');
 	}
 	this._visible = GL.isBoolean(attributes.visible) ? attributes.visible : true;
-	
+
 	if (this._context) {
 		this.initialize();
 	}
 
-	this._onDrag = attributes.onDrag || function () {};
-	this._onMove = attributes.onMove || function () {};
-	this._onDrop = attributes.onDrop || function () {};
-	this._onZoom = attributes.onZoom || function () {};
-	this._onContextMenu = attributes.onContextMenu || function () {};
+	this._onDrag = attributes.onDrag || function () { };
+	this._onMove = attributes.onMove || function () { };
+	this._onDrop = attributes.onDrop || function () { };
+	this._onZoom = attributes.onZoom || function () { };
+	this._onContextMenu = attributes.onContextMenu || function () { };
 
 	if (attributes.connectAll) {
 		this.connectAll();
@@ -48,25 +48,25 @@ GL.Canvas = function GL_Canvas(attributes) {
 GL.Canvas.prototype = {
 	initialize: function () {
 		var context = this._context;
-		context.scale(1/this._scaleX, 1/this._scaleY);
+		context.scale(1 / this._scaleX, 1 / this._scaleY);
 		context.translate(0, 0);
 		context.save();
 		context.scale(this._scaleX, this._scaleY);
 		context.translate(-this._shiftX, -this._shiftY);
 	},
-	
+
 	getId: function () {
 		return this._id;
 	},
-	
+
 	getDomAttributes: function () {
 		return this._domAttributes;
 	},
-	
+
 	getDomParent: function () {
 		return this._domParent;
 	},
-	
+
 	getCoordX: function (layerX) {
 		return layerX / this._scaleX + this._shiftX;
 	},
@@ -89,11 +89,11 @@ GL.Canvas.prototype = {
 	},
 
 	getScale: function () {
-		return {x: this._scaleX, y: this._scaleY};
+		return { x: this._scaleX, y: this._scaleY };
 	},
 
 	getShift: function () {
-		return {x: this._shiftX, y: this._shiftY};
+		return { x: this._shiftX, y: this._shiftY };
 	},
 
 	getScaleX: function () {
@@ -156,9 +156,9 @@ GL.Canvas.prototype = {
 		this._scaleX = this._scaleY = 1;
 		this._shiftX = this._shiftY = 0;
 	},
-	
+
 	clear: function (rectToClear) {
-		rectToClear =	GL.isObject(rectToClear) &&
+		rectToClear = GL.isObject(rectToClear) &&
 						GL.objectHasAllProperties(rectToClear, ['l', 't', 'w', 'h']) &&
 						GL.haveType([rectToClear.l, rectToClear.t, rectToClear.w, rectToClear.h], 'number') ? rectToClear : this.getRegion();
 		this._context.clearRect(rectToClear.l, rectToClear.t, rectToClear.w, rectToClear.h);
@@ -166,7 +166,7 @@ GL.Canvas.prototype = {
 
 	draw: function (objectType, objectData) {
 		if (GL.isNotEmptyString(objectType) && GL.objectHasProperty(GL.Painter, 'render' + objectType.slice(0, 1).toUpperCase() + objectType.slice(1).toLowerCase()) && GL.isObject(objectData)) {
-			GL.Painter['render' + objectType.slice(0,1).toUpperCase() + objectType.slice(1).toLowerCase()](this._context, objectData);
+			GL.Painter['render' + objectType.slice(0, 1).toUpperCase() + objectType.slice(1).toLowerCase()](this._context, objectData);
 		} else {
 			GL.raiseException(GL.exceptionTypes.invalidArguments, 'Canvas.draw');
 		}
@@ -197,7 +197,7 @@ GL.Canvas.prototype = {
 	},
 
 	zoomAuto: function (out) {
-		this.zoom(out ? 1/this._scaleStep : this._scaleStep);
+		this.zoom(out ? 1 / this._scaleStep : this._scaleStep);
 	},
 
 	shiftByX: function (value) {
@@ -230,7 +230,7 @@ GL.Canvas.prototype = {
 
 	shiftAuto: function (xSign, ySign) {
 		if ([-1, 0, 1].indexOf(xSign) > -1 && [-1, 0, 1].indexOf(ySign) > -1) {
-			this.shift(this._shiftStep*xSign, this._shiftStep*ySign);
+			this.shift(this._shiftStep * xSign, this._shiftStep * ySign);
 		} else {
 			GL.raiseException(GL.exceptionTypes.invalidArguments, 'Canvas.shiftAuto');
 		}
@@ -256,11 +256,11 @@ GL.Canvas.prototype = {
 	getDomRegion: function () {
 		var canvas = this._context.canvas;
 		return {
-				l: canvas.offsetLeft,
-				t: canvas.offsetTop,
-				w: canvas.offsetWidth,
-				h: canvas.offsetHeight
-			};
+			l: canvas.offsetLeft,
+			t: canvas.offsetTop,
+			w: canvas.offsetWidth,
+			h: canvas.offsetHeight
+		};
 	},
 
 	moveOn: function (x, y) {
@@ -283,7 +283,7 @@ GL.Canvas.prototype = {
 	},
 
 	resizeOn: function (x, y) {
-		return (this.resizeTo(this._context.canvas.offsetWidth + x, this._context.canvas.offsetHeight + y) ? {dx:x, dy:y} : {dx:0, dy:0});
+		return (this.resizeTo(this._context.canvas.offsetWidth + x, this._context.canvas.offsetHeight + y) ? { dx: x, dy: y } : { dx: 0, dy: 0 });
 	},
 
 	resizeTo: function (x, y) {
@@ -293,7 +293,7 @@ GL.Canvas.prototype = {
 			return true;
 		}
 	},
-	
+
 	toggleVisibility: function (value) {
 		if (GL.isBoolean(value)) {
 			this._visible = value;
@@ -304,8 +304,8 @@ GL.Canvas.prototype = {
 	},
 
 	emptyEventHandling: function (eventName) {
-		if (GL.isNotEmptyString(eventName) && (('on'+eventName) in this._context.canvas)) {
-			this._context.canvas['on'+eventName] = function () { return false; };
+		if (GL.isNotEmptyString(eventName) && (('on' + eventName) in this._context.canvas)) {
+			this._context.canvas['on' + eventName] = function () { return false; };
 		} else {
 			GL.raiseException(GL.exceptionTypes.invalidArguments, 'Canvas.emptyEventHandling', false);
 		}
@@ -323,9 +323,9 @@ GL.Canvas.prototype = {
 	connect: function (eventName, listener) {
 		this._context.canvas.addEventListener(eventName, listener, false);
 		return {
-				eventName: eventName,
-				listener: listener
-			};
+			eventName: eventName,
+			listener: listener
+		};
 	},
 
 	disconnect: function (eventName, listener) {

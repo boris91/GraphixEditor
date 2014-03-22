@@ -6,7 +6,7 @@ GL.OrdersHash = function GL_OrdersHash(order, collectionByIds) {
 		}
 	}
 
-	function _getIndex (key) {
+	function _getIndex(key) {
 		return ('number' === typeof key ? (key < order.length && key >= 0 ? key : -1) : order.indexOf(key));
 	}
 

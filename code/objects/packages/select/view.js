@@ -1,5 +1,5 @@
 GL.SelectView = function (selectModel, device) {
-	this.fixTempLeftTop = function(event) {
+	this.fixTempLeftTop = function (event) {
 		var coords = device.getCoords(event.layerX, event.layerY);
 		selectModel.moveTempLeftTopTo(coords.x, coords.y);
 	};
@@ -14,19 +14,19 @@ GL.SelectView = function (selectModel, device) {
 		device.draw(attributes, device.FORE);
 	};
 	this.fix = function (event) {
-		if(GL.isNumber(event.clientX) && GL.isNumber(event.clientY)) {
+		if (GL.isNumber(event.clientX) && GL.isNumber(event.clientY)) {
 			var coords = device.getCoords(event.layerX, event.layerY);
 			selectModel.moveTempRightBottomTo(coords.x, coords.y);
 		}
 		device.clear(device.FORE);
 	};
-	this.bindParentEventToFunc = function bindLayerEventToFunc (event, func) {
+	this.bindParentEventToFunc = function bindLayerEventToFunc(event, func) {
 		device.connect(event, func);
 	};
-	this.unleashParentEvent = function unleashParentEvent (event, func) {
+	this.unleashParentEvent = function unleashParentEvent(event, func) {
 		device.disconnect(event, func);
 	};
-	this.clear = function clear () {
+	this.clear = function clear() {
 		device.clear();
 	};
 };

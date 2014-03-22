@@ -3,13 +3,13 @@ GL.RectController = function RectController(rectModels, rectView, settings) {
 		continueDrawRect,
 		endDrawRect;
 	this._attached = false;
-	
+
 	this.attachActions = function () {
-		if(rectModels && rectView) {
-			 
+		if (rectModels && rectView) {
+
 			rectView.bindParentEventToFunc("mousedown",
-					beginDrawRect = function (event){
-						if(event.which === 1) {
+					beginDrawRect = function (event) {
+						if (event.which === 1) {
 							rectView.setModel(GL.create('rect',
 														{
 															color: {
@@ -35,21 +35,21 @@ GL.RectController = function RectController(rectModels, rectView, settings) {
 														}));
 							rectView.fixTempLeftTop(event);
 							rectView.bindParentEventToFunc("mousemove", continueDrawRect = function (event) {
-									rectView.draw("fore", event);
-								});
+								rectView.draw("fore", event);
+							});
 							rectView.unleashParentEvent("mousedown", beginDrawRect);
 							rectView.bindParentEventToFunc("mousedown", endDrawRect = function (event) {
-									if(event.which === 1) {
-										rectView.fixRect(event);
-										rectModels.add(rectView.getModel().getData(true));
-									}
-									else {
-										rectView.clear("fore");
-									}
-									rectView.unleashParentEvent("mousemove", continueDrawRect);
-									rectView.unleashParentEvent("mousedown", endDrawRect);
-									rectView.bindParentEventToFunc("mousedown", beginDrawRect);
-								});
+								if (event.which === 1) {
+									rectView.fixRect(event);
+									rectModels.add(rectView.getModel().getData(true));
+								}
+								else {
+									rectView.clear("fore");
+								}
+								rectView.unleashParentEvent("mousemove", continueDrawRect);
+								rectView.unleashParentEvent("mousedown", endDrawRect);
+								rectView.bindParentEventToFunc("mousedown", beginDrawRect);
+							});
 						}
 					});
 			this._attached = true;

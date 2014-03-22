@@ -3,12 +3,12 @@ GL.RegpolyController = function RegpolyController(regpolyModels, regpolyView, se
 		continueDrawRegpoly,
 		endDrawRegpoly;
 	this._attached = false;
-	
+
 	this.attachActions = function () {
-		if(regpolyModels && regpolyView) {
+		if (regpolyModels && regpolyView) {
 			regpolyView.bindParentEventToFunc("mousedown",
-					beginDrawRegpoly = function (event){
-						if(event.which === 1) {
+					beginDrawRegpoly = function (event) {
+						if (event.which === 1) {
 							regpolyView.setModel(GL.create('regpoly',
 															{
 																anglesCount: settings.anglesCount,
@@ -36,22 +36,22 @@ GL.RegpolyController = function RegpolyController(regpolyModels, regpolyView, se
 															}));
 							regpolyView.fixTempCenter(event);
 							regpolyView.bindParentEventToFunc("mousemove", continueDrawRegpoly = function (event) {
-									regpolyView.getModel().calculatePointsCoords();
-									regpolyView.draw("fore", event);
-								});
+								regpolyView.getModel().calculatePointsCoords();
+								regpolyView.draw("fore", event);
+							});
 							regpolyView.unleashParentEvent("mousedown", beginDrawRegpoly);
 							regpolyView.bindParentEventToFunc("mousedown", endDrawRegpoly = function (event) {
-									if(event.which === 1) {
-										regpolyView.fixRegpoly(event);
-										regpolyModels.add(regpolyView.getModel().getData(true));
-									}
-									else {
-										regpolyView.clear("fore");
-									}
-									regpolyView.unleashParentEvent("mousemove", continueDrawRegpoly);
-									regpolyView.unleashParentEvent("mousedown", endDrawRegpoly);
-									regpolyView.bindParentEventToFunc("mousedown", beginDrawRegpoly);
-								});
+								if (event.which === 1) {
+									regpolyView.fixRegpoly(event);
+									regpolyModels.add(regpolyView.getModel().getData(true));
+								}
+								else {
+									regpolyView.clear("fore");
+								}
+								regpolyView.unleashParentEvent("mousemove", continueDrawRegpoly);
+								regpolyView.unleashParentEvent("mousedown", endDrawRegpoly);
+								regpolyView.bindParentEventToFunc("mousedown", beginDrawRegpoly);
+							});
 						}
 					});
 			this._attached = true;
