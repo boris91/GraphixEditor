@@ -1,5 +1,7 @@
 ﻿(function () {
-    var self = null,
+    var _self = null,
+	    //TODO: move to a separate file all string constants (files' paths, modes, packages info, etc.)
+        DEBUG_MODE = true,
         STAMP = '$legally_created_object$',
         MODES = {
             NONE: 'none',
@@ -54,39 +56,79 @@
         _userIdentity = 'user',
         _window = window,
         _internalLoadingComplete = false,
-        //+++ DEBUG MODE +++
-        _debugMode = true,
-        //--- DEBUG MODE ---
-        _addInternalLoadListeners = function (disallowUserInit, listeners) {
-            var eventsManager = self.eventsManager,
-                eventName, eventListeners, eventListenersCount, i;
-            eventsManager.add(self, 'load', function () { self.extend(self, new self.TypesHelper()); });
-            eventsManager.add(self, 'load', function () { self.DOM = new self.DomHelper(_window); });
-            eventsManager.add(self, 'load', function () { self.UI = new self.UIGenerator(true); });
-            eventsManager.add(self, 'load', function () { self.XHR = new self.XhrManager(); });
-            if (!disallowUserInit) {
-                eventsManager.add(self, 'load', function () { self.initUser(_window); });
-            }
-            for (eventName in listeners) {
-                eventListeners = listeners[eventName];
-                eventListenersCount = eventListeners.length;
-                for (i = 0; i < eventListenersCount; i++) {
-                    eventsManager.add(self, eventName, eventListeners[i]);
-                }
-            }
+		_uniqueIdsGenerator = (function () {
+        	var _idLength = 32,
+				_portionCount = 100,
+				_ids = [],
+				CHARS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
+				CHARS_COUNT = CHARS.length,
+				_generate = function () {
+					var id = '',
+						i;
+					for (i = 0; i < _idLength; i++) {
+						id += CHARS[Math.floor(Math.random() * CHARS_COUNT)];
+					}
+					_ids.push(id);
+				},
+				_generatePortion = function (portionCount) {
+					var i;
+					portionCount = portionCount || _portionCount;
+					for (i = 0; i < portionCount; i++) {
+						_generate();
+					}
+				};
+
+        	_generatePortion(10000);
+
+        	return {
+        		setIdLength: function (value) {
+        			if ("number" === typeof value && value > 0) {
+        				_idLength = value;
+        			}
+        		},
+        		setPortionCount: function (value) {
+        			if ("number" === typeof value && value > 0) {
+        				_portionCount = value;
+        			}
+        		},
+        		get: function () {
+        			if (1 === _ids.length) {
+        				_generatePortion();
+        			}
+        			return _ids.pop();
+        		},
+        		getRange: function (count) {
+        			count = ("number" === typeof count && count > 0) ? count : _portionCount;
+        			if (count > _ids.length) {
+        				_generatePortion(count - _ids.length + 1);
+        			}
+        			return _ids.splice(_ids.length - count, count);
+        		}
+        	};
+        })(),
+        _addInternalLoadListeners = function (disallowUserInit, disallowUICreation, listeners) {
+            var defaultLoadListeners = [
+                function () { _self.extend(_self, new _self.TypesHelper()); },
+                function () { _self.DOM = new _self.DomHelper(_window); },
+                function () { _self.UI = new _self.UIGenerator(!disallowUICreation); },
+                function () { _self.XHR = new _self.XhrManager(); },
+                function () { (!disallowUserInit) && _self.initUser(_window); }
+            ];
+            listeners['load'] = defaultLoadListeners.concat(listeners['load'] || []);
+            _self.eventsManager.addRanges(_self, listeners);
         },
         _bindInternalLoadToWindowLoad = function () {
             var onloadHandler = function () {
-                if (!self.allScriptsLoaded()) {
-                    return self.defer(onloadHandler, 0);
+                if (!_self.allScriptsLoaded()) {
+                    return _self.defer(onloadHandler, 0);
                 }
-                self.eventsManager.fire(self, 'load');
+                _self.eventsManager.fire(_self, 'load');
                 _internalLoadingComplete = true;
             },
                 loadScriptsAndFireSelfLoad = function () {
-                    self.loadAllStyles();
-                    self.loadAllScripts();
-                    self.loadAllPackages();
+                    _self.loadAllStyles();
+                    _self.loadAllScripts();
+                    _self.loadAllPackages();
                     onloadHandler();
                 };
             if ('complete' !== _window.document.readyState) {
@@ -95,11 +137,10 @@
                 loadScriptsAndFireSelfLoad();
             }
         };
-    self = window.GL = {
-		/*{ scripts, scriptsToIgnore, scriptsBase, userIdentity, window, disallowUserInit, skipInternalLoading, listeners }*/
+    _self = window.GL = {
+        /*{ scripts, scriptsToIgnore, scriptsBase, userIdentity, window, disallowUserInit, disallowUICreation, skipInternalLoading, listeners }*/
 	    initialize: function (params) {
 	        params = params || {};
-	        //TODO: move to a separate file
 	        _styles = params.styles || _styles;
 	        _stylesToIgnore = params.stylesToIgnore || _stylesToIgnore;
 	        _stylesBase = params.stylesBase || _stylesBase;
@@ -113,7 +154,7 @@
 			_window = params.window || _window;
 			this.eventsManager.setup();
 			if (!_internalLoadingComplete && !params.skipInternalLoading) {
-				_addInternalLoadListeners(params.disallowUserInit, params.listeners || {});
+			    _addInternalLoadListeners(params.disallowUserInit, params.disallowUICreation, params.listeners || {});
 				_bindInternalLoadToWindowLoad();
 			}
 		},
@@ -122,97 +163,117 @@
 		UI: null,
 		XHR: null,
 
-		eventsManager: {
-			//private API
-			_methodTriggeredId: '',
-			_methodTriggeredComment: '',
-			_typeNamePrefix: 'ON_',
-			_getFullTypeName: function (type) {
-				return this._typeNamePrefix + type.toUpperCase();
-			},
-			//public API
-			setup: function () {
-				this._methodTriggeredId = 'triggered_' + self.generateUniqueId();
-				this._methodTriggeredComment = '/*' + this._methodTriggeredId + '*/';
-			},
-			add: function (target, type, listener) {
-				var listenerId = self.generateUniqueId();
-				type = this._getFullTypeName(type);
-				target.listeners = target.listeners || {};
-				target.listeners[type] = target.listeners[type] || {};
-				target.listeners[type][listenerId] = listener;
-				return /*eventInfo*/{
-					fullTypeName: type,
-					listenerId: listenerId
-				};
-			},
-			methodTriggered: function (target, methodName) {
-				return (target[this._methodTriggeredId] && target[this._methodTriggeredId][methodName]);
-			},
-			createTrigger: function (target, methodName) {
-				var methodText = 'var result = (' + this._methodTriggeredComment + target[methodName].toString() + this._methodTriggeredComment + ').apply(this, arguments);\n' +
-					'GL.eventsManager.fire(this, \'' + methodName + '\', arguments);\n';
-				'return result;';
-				target[methodName] = new _window.Function(methodText);
-				target[this._methodTriggeredId] = target[this._methodTriggeredId] || {};
-				target[this._methodTriggeredId][methodName] = true;
-			},
-			connect: function (target, methodName, listener) {
-				if (!this.methodTriggered(target, methodName)) {
-					this.createTrigger(target, methodName);
-				}
-				return this.add(target, methodName, listener);
-			},
-			disconnect: function (target, eventInfo) {
-				this.remove(target, eventInfo);
-			},
-			remove: function (target, eventInfo) {
-				var type = eventInfo.fullTypeName,
-					listenerId = eventInfo.listenerId;
-				if (target.listeners && target.listeners[type] && target.listeners[type][listenerId]) {
-					delete target.listeners[type][listenerId];
-					for (var prop in eventInfo) {
-						delete eventInfo[prop];
-					}
-				}
-			},
-			clear: function (target, type) {
-				var listeners;
-				type = this._getFullTypeName(type);
-				if (target.listeners && (listeners = target.listeners[type])) {
-					for (var listenerId in listeners) {
-						delete listeners[listenerId];
-					}
-				}
-			},
-			fire: function (target, type, args) {
-				var listenerId,
-					listeners,
-					event;
-				if (!target || !target.listeners || !type || !(listeners = target.listeners[this._getFullTypeName(type)])) {
-					return;
-				}
-				type = type.toLowerCase();
-				event = {
-					type: type,
-					target: target,
-					arguments: args,
-					window: _window,
-					allowPropagate: true,
-					stop: function () {
-						this.allowPropagate = false;
-					}
-				};
-				for (listenerId in listeners) {
-					if (event.allowPropagate) {
-						listeners[listenerId].apply(target, args || [event]);
-					}
-				}
-			},
-			stop: function (event) {
-				event.allowPropagate = false;
-			}
-		},
+		eventsManager: (function () {
+		    var _methodTriggeredId = '',
+		        _methodTriggeredComment = '',
+		        TYPE_NAME_PREFIX = 'ON_',
+		        _getFullTypeName = function (type) {
+		            return TYPE_NAME_PREFIX + type.toUpperCase();
+		        },
+		        _createTrigger = function (target, methodName) {
+		            var triggeredMethodText = _methodTriggeredComment + target[methodName].toString() + _methodTriggeredComment,
+                        methodText = 'var result = (' + triggeredMethodText + ').apply(this, arguments);\n' +
+					        'GL.eventsManager.fire(this, \'' + methodName + '\', arguments);\n' +
+				            'return result;';
+		            target[methodName] = new _window.Function(methodText);
+		            target[_methodTriggeredId] = target[_methodTriggeredId] || {};
+		            target[_methodTriggeredId][methodName] = true;
+		        };
+
+            return {
+		        setup: function () {
+		            _methodTriggeredId = 'triggered_' + _self.generateUniqueId();
+		            _methodTriggeredComment = '/*' + _methodTriggeredId + '*/';
+		        },
+		        add: function (target, type, listener) {
+		            var listenerId = _self.generateUniqueId();
+		            type = _getFullTypeName(type);
+		            target.listeners = target.listeners || {};
+		            target.listeners[type] = target.listeners[type] || {};
+		            target.listeners[type][listenerId] = listener;
+		            return /*eventInfo*/{
+		                fullTypeName: type,
+		                listenerId: listenerId
+		            };
+		        },
+		        addRange: function (target, type, listeners) {
+		            var eventInfos = [],
+                        listenersCount = listeners.length,
+                        i;
+		            for (i = 0; i < listenersCount; i++) {
+		                eventInfos.push(this.add(target, type, listeners[i]));
+		            }
+		            return eventInfos;
+		        },
+		        addRanges: function (target, listenersByType) {
+		            var eventsInfos = {},
+                        type;
+		            for (type in listenersByType) {
+		                eventsInfos[type] = this.addRange(target, type, listenersByType[type]);
+		            }
+		            return eventsInfos;
+		        },
+		        methodTriggered: function (target, methodName) {
+		            return (target[_methodTriggeredId] && target[_methodTriggeredId][methodName]);
+		        },
+		        /* methods 'connect' and 'disconnect' use for injecting listeners' triggers into the target[methodName]-methods */
+		        connect: function (target, methodName, listener) {
+		            if (!this.methodTriggered(target, methodName)) {
+		                _createTrigger(target, methodName);
+		            }
+		            return this.add(target, methodName, listener);
+		        },
+		        disconnect: function (target, eventInfo) {
+		            this.remove(target, eventInfo);
+		        },
+		        remove: function (target, eventInfo) {
+		            var type = eventInfo.fullTypeName,
+					    listenerId = eventInfo.listenerId;
+		            if (target.listeners && target.listeners[type] && target.listeners[type][listenerId]) {
+		                delete target.listeners[type][listenerId];
+		                for (var prop in eventInfo) {
+		                    delete eventInfo[prop];
+		                }
+		            }
+		        },
+		        clear: function (target, type) {
+		            var listeners;
+		            type = _getFullTypeName(type);
+		            if (target.listeners && (listeners = target.listeners[type])) {
+		                for (var listenerId in listeners) {
+		                    delete listeners[listenerId];
+		                }
+		            }
+		        },
+		        fire: function (target, type, args) {
+		            var listenerId,
+					    listeners,
+					    event;
+		            if (!target || !target.listeners || !type || !(listeners = target.listeners[_getFullTypeName(type)])) {
+		                return;
+		            }
+		            type = type.toLowerCase();
+		            event = {
+		                type: type,
+		                target: target,
+		                arguments: args,
+		                window: _window,
+		                allowPropagate: true,
+		                stop: function () {
+		                    this.allowPropagate = false;
+		                }
+		            };
+		            for (listenerId in listeners) {
+		                if (event.allowPropagate) {
+		                    listeners[listenerId].apply(target, args || [event]);
+		                }
+		            }
+		        },
+		        stop: function (event) {
+		            event.allowPropagate = false;
+		        }
+		    };
+		})(),
 
 		allScriptsLoaded: function () {
 		    return (_loadedScriptsCounter === (_scripts.length + (_packages.length * _packagesModules.length)));
@@ -342,64 +403,12 @@
 		    }
 		},
 
-		uniqueIdsGenerator: (function () {
-			var _idLength = 32,
-				_portionCount = 100,
-				_ids = [],
-				CHARS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
-				CHARS_COUNT = CHARS.length,
-				_generate = function () {
-					var id = '',
-						i;
-					for (i = 0; i < _idLength; i++) {
-						id += CHARS[Math.floor(Math.random() * CHARS_COUNT)];
-					}
-					_ids.push(id);
-				},
-				_generatePortion = function (portionCount) {
-					var i;
-					portionCount = portionCount || _portionCount;
-					for (i = 0; i < portionCount; i++) {
-						_generate();
-					}
-				};
-
-			_generatePortion(10000);
-
-			return {
-				setIdLength: function (value) {
-					if ("number" === typeof value && value > 0) {
-						_idLength = value;
-					}
-				},
-				setPortionCount: function (value) {
-					if ("number" === typeof value && value > 0) {
-						_portionCount = value;
-					}
-				},
-				get: function () {
-					if (1 === _ids.length) {
-						_generatePortion();
-					}
-					return _ids.pop();
-				},
-				getRange: function (count) {
-					//TODO: implement
-					count = ("number" === typeof count && count > 0) ? count : _portionCount;
-					if (count > _ids.length) {
-						_generatePortion(count - _ids.length + 1);
-					}
-					return _ids.splice(_ids.length - count, count);
-				}
-			};
-		})(),
-
 		generateUniqueId: function () {
-			return this.uniqueIdsGenerator.get();
+			return _uniqueIdsGenerator.get();
 		},
 		
 		generateUniqueIdsRange: function (count) {
-			return this.uniqueIdsGenerator.getRange(count);
+			return _uniqueIdsGenerator.getRange(count);
 		},
 
 		create: function (type, arg1) {
@@ -445,13 +454,13 @@
 
 		raiseException: function (error, message, description) {
 			var text = error + ': ' + message + ((description && typeof description === 'string') && ('\nDescription: ' + description));
-			if (_debugMode && confirm(text + '\nDebug it?')) {
+			if (DEBUG_MODE && confirm(text + '\nDebug it?')) {
 				debugger;
 			}
 		}
     };
 
-    Object.defineProperties(self, {
+    Object.defineProperties(_self, {
         stamp: {
             get: function () {
                 return STAMP;

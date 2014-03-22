@@ -29,18 +29,11 @@
 	    },
 	    _syncReadyStateChangeHandler = function (xhr, callbacks) {
 		    var defaultSyncCallback = function () { return arguments[0]; };
-		    callbacks = callbacks || {
-			    ok: defaultSyncCallback,
-			    fail: defaultSyncCallback
-		    };
 		    try {
 			    if (200 === xhr.status) {
-				    callbacks.ok = callbacks.ok || defaultSyncCallback;
-				    return callbacks.ok(xhr.response);
+			    	return (callbacks && callbacks.ok || defaultSyncCallback)(xhr.response || xhr.responseText);
 			    } else {
-				    callbacks.fail = callbacks.fail || defaultSyncCallback;
-				    //TODO: pass not xhr, but some error info (statusText maybe?)
-				    return callbacks.fail(xhr);
+			    	return (callbacks && callbacks.fail || defaultSyncCallback)(xhr.response || xhr.responseText);
 			    }
 		    } finally {
 			    _remove(xhr.id);
@@ -49,7 +42,7 @@
         _getAsyncReadyStateChangeHandler = function (xhr, callbacks) {
             return function () {
                 if (4 === xhr.readyState) {
-                    return self._syncReadyStateChangeHandler(xhr, callbacks);
+                    return _syncReadyStateChangeHandler(xhr, callbacks);
                 }
             };
         };
