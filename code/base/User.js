@@ -166,11 +166,11 @@ GL.User = function GL_User(defaultProps, objectsData) {
 		},
 
 		shiftSelected: function (event) {
-			var x = 0, y = 0,
-                keyCode = event.keyCode,
+			var x = 0,
+				y = 0,
                 keyApproached = true,
                 shiftFactor = _settings.getForSelectOperations().shiftFactor;
-			switch (keyCode) {
+			switch (event.keyCode) {
 				case GL.keys.LEFT_ARROW:
 					x = -shiftFactor;
 					y = 0;
@@ -202,11 +202,11 @@ GL.User = function GL_User(defaultProps, objectsData) {
 		},
 
 		resizeSelected: function (event) {
-			var x = 0, y = 0,
-                keyCode = event.keyCode,
+			var x = 0,
+				y = 0,
                 keyApproached = true,
                 resizeFactor = _settings.getResizeFactor();
-			switch (keyCode) {
+			switch (event.keyCode) {
 				case GL.keys.NUMPAD_4:
 					x = -resizeFactor;
 					y = 0;
@@ -233,11 +233,10 @@ GL.User = function GL_User(defaultProps, objectsData) {
 		},
 
 		rotateSelected: function (event) {
-			var keyCode = event.keyCode,
-                keyApproached = true,
+			var keyApproached = true,
                 rotateFactor = _settings.getForSelectOperations().rotateFactor,
 	            angle, center;
-			switch (keyCode) {
+			switch (event.keyCode) {
 				case GL.keys.NUMPAD_7:
 					angle = -rotateFactor;
 					break;
