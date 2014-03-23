@@ -10,15 +10,15 @@ GL.SelectView = function (selectModel, device) {
 		attributes.top = GL.isNumber(attributes.tempLeftTop.y) ? attributes.tempLeftTop.y : attributes.top;
 		attributes.width = coords.x - attributes.left;
 		attributes.height = coords.y - attributes.top;
-		device.clear(device.FORE);
-		device.draw(attributes, device.FORE);
+		device.clear(true);
+		device.draw(attributes, true);
 	};
 	this.fix = function (event) {
 		if (GL.isNumber(event.clientX) && GL.isNumber(event.clientY)) {
 			var coords = device.getCoords(event.layerX, event.layerY);
 			selectModel.moveTempRightBottomTo(coords.x, coords.y);
 		}
-		device.clear(device.FORE);
+		device.clear(true);
 	};
 	this.bindParentEventToFunc = function bindLayerEventToFunc(event, func) {
 		device.connect(event, func);

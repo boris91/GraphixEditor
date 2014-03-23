@@ -12,7 +12,6 @@ GL.User = function GL_User(defaultProps, objectsData) {
 	    },
         _views = {},
         _controllers = {},
-	    _selectionFixed = false,
 	    _initViewsAndControllers = function () {
 	    	var isSelect,
 			    type,
@@ -48,18 +47,17 @@ GL.User = function GL_User(defaultProps, objectsData) {
 		},
 
 		redrawSelectedObjects: function (preHandler /*for each object, optional*/, postHandler /*for each object, optional*/) {
-			var DEVICE_FORE = _device.FORE,
-	            i, length, localRegion, objectType;
+			var i, length, localRegion, objectType;
 			preHandler = preHandler || function () { };
 			postHandler = postHandler || function () { };
-			_device.clear(DEVICE_FORE);
+			_device.clear(true);
 			//for objects
 			_models.objects.forEachSelected(function (object, id) {
 				if (object.isVisible()) {
 					preHandler(object, id);
 					objectType = object.getType();
 					_views[objectType].setModel(object);
-					_views[objectType].render(DEVICE_FORE);
+					_views[objectType].render(true);
 					localRegion = object.getRegion();
 					_device.draw({
 						type: 'select',
@@ -67,20 +65,18 @@ GL.User = function GL_User(defaultProps, objectsData) {
 						top: localRegion.t,
 						width: localRegion.w,
 						height: localRegion.h
-					}, DEVICE_FORE);
+					}, true);
 					postHandler(object, id);
 				}
 			});
 		},
 
 		redrawAllObjects: function (preHandler /*for each object, optional*/, postHandler /*for each object, optional*/) {
-			var DEVICE_FORE = _device.FORE,
-                DEVICE_BACK = _device.BACK,
-                i, length, localRegion, objectType, objectIsSelected;
+			var i, length, localRegion, objectType, objectIsSelected;
 			preHandler = preHandler || function () { };
 			postHandler = postHandler || function () { };
-			_device.clear(DEVICE_FORE);
-			_device.clear(DEVICE_BACK);
+			_device.clear(true);
+			_device.clear(false);
 			//for objects
 			_models.objects.forEach(function (object, id) {
 				if (object.isVisible()) {
@@ -89,7 +85,7 @@ GL.User = function GL_User(defaultProps, objectsData) {
 					preHandler(object, id, objectIsSelected);
 					_views[objectType].setModel(object);
 					if (objectIsSelected) {
-						_views[objectType].render(DEVICE_FORE);
+						_views[objectType].render(true);
 						localRegion = object.getRegion();
 						_device.draw({
 							type: 'select',
@@ -97,9 +93,9 @@ GL.User = function GL_User(defaultProps, objectsData) {
 							top: localRegion.t,
 							width: localRegion.w,
 							height: localRegion.h
-						}, DEVICE_FORE);
+						}, true);
 					} else {
-						_views[objectType].render(DEVICE_BACK);
+						_views[objectType].render(false);
 					}
 					postHandler(object, id, objectIsSelected);
 				}
@@ -119,7 +115,6 @@ GL.User = function GL_User(defaultProps, objectsData) {
                 regionWidth = region.w,
                 regionHeight = region.h,
                 rationalSelect = GL.create('select'),
-                DEVICE_FORE = _device.FORE,
                 objectIsInRegion;
 			rationalSelect.setRegion({ l: null, t: null, w: null, h: null });
 			//for objects
@@ -136,24 +131,18 @@ GL.User = function GL_User(defaultProps, objectsData) {
 						top: localRegion.t,
 						width: localRegion.w,
 						height: localRegion.h
-					}, DEVICE_FORE);
+					}, true);
 				}
 			});
 			_models.select.setRegion(rationalSelect.getRegion());
-			_selectionFixed = true;
+			this.redrawAllObjects();
 		},
 
 		unfixSelected: function (event) {
 			if (GL.keys.ESCAPE === event.keyCode) {
 				this.resetSelection();
 				this.redrawAllObjects();
-				_selectionFixed = false;
 			}
-		},
-
-		redrawOnAction: function (preHandler, postHandler) {
-			//TODO: implement for every action with selected objects (remove, shift, resize, rotate)
-			//TODO: use it on every action
 		},
 
 		removeSelected: function (event) {
@@ -192,12 +181,7 @@ GL.User = function GL_User(defaultProps, objectsData) {
 					break;
 			}
 			if (keyApproached) {
-				this.redrawAllObjects(function (object, id, isSelected) {
-					if (isSelected) {
-						object.shift(x, y);
-					}
-				});
-				//this.redrawSelectedObjects(function (object, id) { object.shift(x, y); });
+				this.redrawSelectedObjects(function (object, id) { object.shift(x, y); });
 			}
 		},
 

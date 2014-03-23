@@ -6,7 +6,7 @@ GL.PointController = function PointController(pointModels, pointView, settings) 
 		if (pointModels && pointView) {
 			pointView.bindParentEventToFunc("mousedown", down0 = function (event) {
 				if (event.which === 1) {
-					pointView.clear("fore");
+					pointView.clear(true);
 					pointView.setModel(GL.create('point',
 													{
 														radius: settings.penWidth / 2,
@@ -17,7 +17,7 @@ GL.PointController = function PointController(pointModels, pointView, settings) 
 															a: settings.color.a
 														}
 													}));
-					pointView.draw("back", true, event);
+					pointView.draw(false, true, event);
 					pointModels.add(pointView.getModel().getData(true));
 				}
 			});
@@ -25,7 +25,7 @@ GL.PointController = function PointController(pointModels, pointView, settings) 
 		}
 	};
 	this.detachActions = function () {
-		pointView.clear("fore");
+		pointView.clear(true);
 		pointView.unleashParentEvent("mousedown", down0);
 		this._attached = false;
 	};

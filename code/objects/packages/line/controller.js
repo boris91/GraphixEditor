@@ -28,7 +28,7 @@ GL.LineController = function LineController(lineModels, lineView, settings) {
 														}));
 							lineView.fixTemp1(event);
 							lineView.bindParentEventToFunc("mousemove", continueDrawLine = function (event) {
-								lineView.draw("fore", event);
+								lineView.draw(true, event);
 							});
 							lineView.unleashParentEvent("mousedown", beginDrawLine);
 							lineView.bindParentEventToFunc("mousedown", endDrawLine = function (event) {
@@ -37,7 +37,7 @@ GL.LineController = function LineController(lineModels, lineView, settings) {
 									lineModels.add(lineView.getModel().getData(true));
 								}
 								else {
-									lineView.clear("fore");
+									lineView.clear(true);
 								}
 								lineView.unleashParentEvent("mousemove", continueDrawLine);
 								lineView.unleashParentEvent("mousedown", endDrawLine);
@@ -49,7 +49,7 @@ GL.LineController = function LineController(lineModels, lineView, settings) {
 		}
 	};
 	this.detachActions = function () {
-		lineView.clear("fore");
+		lineView.clear(true);
 		lineView.unleashParentEvent("mousedown", beginDrawLine);
 		lineView.unleashParentEvent("mousedown", endDrawLine);
 		lineView.unleashParentEvent("mousemove", continueDrawLine);

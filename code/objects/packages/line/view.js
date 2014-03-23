@@ -15,12 +15,12 @@ GL.LineView = function (lineModel, device) {
 		var coords = device.getCoords(event.layerX, event.layerY);
 		lineModel.moveTemp1To(coords.x, coords.y);
 	};
-	this.render = function () {
-		device.draw(lineModel.getAttributes());
+	this.render = function (drawOnForeground) {
+		device.draw(lineModel.getAttributes(), drawOnForeground);
 	};
-	this.draw = function (fore_or_back, event) {
-		if (fore_or_back === 'fore') {
-			device.clear(device.FORE);
+	this.draw = function (drawOnForeground, event) {
+		if (drawOnForeground) {
+			device.clear(true);
 		}
 		var attributes = lineModel.getAttributes(),
 			coords = device.getCoords(event.layerX, event.layerY);
@@ -34,13 +34,13 @@ GL.LineView = function (lineModel, device) {
 		}
 		attributes.x2 = coords.x;
 		attributes.y2 = coords.y;
-		device.draw(attributes, fore_or_back === 'fore' ? device.FORE : device.BACK);
+		device.draw(attributes, drawOnForeground);
 	};
 	this.fixLine = function fixLine(event) {
 		var coords = device.getCoords(event.layerX, event.layerY);
 		lineModel.moveTemp2To(coords.x, coords.y);
-		device.clear(device.FORE);
-		device.draw(lineModel.getAttributes(), device.BACK);
+		device.clear(true);
+		device.draw(lineModel.getAttributes(), false);
 	};
 	this.bindParentEventToFunc = function bindLayerEventToFunc(event, func) {
 		device.connect(event, func);
@@ -48,8 +48,8 @@ GL.LineView = function (lineModel, device) {
 	this.unleashParentEvent = function unleashParentEvent(event, func) {
 		device.disconnect(event, func);
 	};
-	this.clear = function clear(fore_or_back) {
-		device.clear(fore_or_back === 'fore' ? device.FORE : device.BACK);
+	this.clear = function clear(drawOnForeground) {
+		device.clear(drawOnForeground);
 	};
 
 };

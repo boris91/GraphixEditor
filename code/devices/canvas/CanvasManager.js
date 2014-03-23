@@ -30,7 +30,8 @@ GL.CanvasManager = function GL_CanvasManager(data) {
 	});
 	this._stretcher = new GL.Stretcher({
 		onMove: function (moveX, moveY) {
-			self.restore(self.BOTH);
+			self._back.restore();
+			self._fore.restore();
 			self._back.resizeOn(moveX, moveY);
 			return self._fore.resizeOn(moveX, moveY);
 		},
@@ -40,7 +41,8 @@ GL.CanvasManager = function GL_CanvasManager(data) {
 	//BINDING EVENT LISTENERS [CANVAS MANAGER HANDLE]
 	function zoom(event) {
 		var zoomOut = ('wheelDelta' in event ? -event.wheelDelta / 120 : event.detail / 3) > 0;
-		self.clear(self.BOTH);
+		self._back.clear();
+		self._fore.clear();
 		self._back.zoomAuto(zoomOut);
 		self._fore.zoomAuto(zoomOut);
 		self._onRedraw();
@@ -60,7 +62,8 @@ GL.CanvasManager = function GL_CanvasManager(data) {
 				moveY = -(event.layerY - self.moveY) / self._back.getScaleY();
 			self.moveX = event.layerX;
 			self.moveY = event.layerY;
-			self.clear(self.BOTH);
+			self._back.clear();
+			self._fore.clear();
 			self._back.shift(moveX, moveY);
 			self._fore.shift(moveX, moveY);
 			self._onRedraw();
@@ -75,10 +78,6 @@ GL.CanvasManager = function GL_CanvasManager(data) {
 };
 
 GL.CanvasManager.prototype = {
-	BACK: '_back',
-	FORE: '_fore',
-	BOTH: '_both',
-
 	getScale: function () {
 		var scale = this._back.getScale();
 		return {
@@ -120,29 +119,16 @@ GL.CanvasManager.prototype = {
 		this._fore.setShiftStep(shiftStep);
 	},
 
-	restore: function (foreOrBackOrBoth) {
-		foreOrBackOrBoth = foreOrBackOrBoth || this.BACK;
-		if (foreOrBackOrBoth === this.FORE || foreOrBackOrBoth === this.BACK) {
-			this[foreOrBackOrBoth].restore();
-		} else {
-			this._back.restore();
-			this._fore.restore();
-		}
+	restore: function (drawOnForeground) {
+		this[drawOnForeground ? '_fore' : '_back'].restore();
 	},
 
-	clear: function (foreOrBackOrBoth) {
-		foreOrBackOrBoth = foreOrBackOrBoth || this.BACK;
-		if (foreOrBackOrBoth === this.FORE || foreOrBackOrBoth === this.BACK) {
-			this[foreOrBackOrBoth].clear();
-		} else {
-			this._back.clear();
-			this._fore.clear();
-		}
+	clear: function (drawOnForeground) {
+		this[drawOnForeground ? '_fore' : '_back'].clear();
 	},
 
-	draw: function (attributes, foreOrBack) {
-		foreOrBack = foreOrBack || this.BACK;
-		this[foreOrBack].draw(attributes.type, attributes);
+	draw: function (attributes, drawOnForeground) {
+		this[drawOnForeground ? '_fore' : '_back'].draw(attributes.type, attributes);
 	},
 
 	connect: function (eventName, handler) {

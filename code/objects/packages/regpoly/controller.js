@@ -37,7 +37,7 @@ GL.RegpolyController = function RegpolyController(regpolyModels, regpolyView, se
 							regpolyView.fixTempCenter(event);
 							regpolyView.bindParentEventToFunc("mousemove", continueDrawRegpoly = function (event) {
 								regpolyView.getModel().calculatePointsCoords();
-								regpolyView.draw("fore", event);
+								regpolyView.draw(true, event);
 							});
 							regpolyView.unleashParentEvent("mousedown", beginDrawRegpoly);
 							regpolyView.bindParentEventToFunc("mousedown", endDrawRegpoly = function (event) {
@@ -46,7 +46,7 @@ GL.RegpolyController = function RegpolyController(regpolyModels, regpolyView, se
 									regpolyModels.add(regpolyView.getModel().getData(true));
 								}
 								else {
-									regpolyView.clear("fore");
+									regpolyView.clear(true);
 								}
 								regpolyView.unleashParentEvent("mousemove", continueDrawRegpoly);
 								regpolyView.unleashParentEvent("mousedown", endDrawRegpoly);
@@ -58,7 +58,7 @@ GL.RegpolyController = function RegpolyController(regpolyModels, regpolyView, se
 		}
 	};
 	this.detachActions = function () {
-		regpolyView.clear("fore");
+		regpolyView.clear(true);
 		regpolyView.unleashParentEvent("mousedown", beginDrawRegpoly);
 		regpolyView.unleashParentEvent("mousedown", endDrawRegpoly);
 		regpolyView.unleashParentEvent("mousemove", continueDrawRegpoly);

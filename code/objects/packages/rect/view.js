@@ -15,10 +15,10 @@ GL.RectView = function (rectModel, device) {
 		var coords = device.getCoords(event.layerX, event.layerY);
 		rectModel.moveTempLeftTopTo(coords.x, coords.y);
 	};
-	this.render = function () {
-		device.draw(rectModel.getAttributes());
+	this.render = function (drawOnForeground) {
+		device.draw(rectModel.getAttributes(), drawOnForeground);
 	};
-	this.draw = function (fore_or_back, event) {
+	this.draw = function (drawOnForeground, event) {
 		var coords = device.getCoords(event.layerX, event.layerY),
 			attributes = rectModel.getAttributes(),
 			tempLeft = GL.isNumber(attributes.tempLeftTop.x) ? attributes.tempLeftTop.x : attributes.points[0].x,
@@ -27,16 +27,16 @@ GL.RectView = function (rectModel, device) {
 								{ x: coords.x, y: tempTop },
 								{ x: coords.x, y: coords.y },
 								{ x: tempLeft, y: coords.y }];
-		if (fore_or_back === 'fore') {
-			this.clear('fore');
+		if (drawOnForeground) {
+			this.clear(true);
 		}
-		device.draw(attributes, 'fore' === fore_or_back ? device.FORE : device.BACK);
+		device.draw(attributes, drawOnForeground);
 	};
 	this.fixRect = function (event) {
 		var coords = device.getCoords(event.layerX, event.layerY);
 		rectModel.moveTempRightBottomTo(coords.x, coords.y);
-		this.clear('fore');
-		device.draw(rectModel.getAttributes(), device.BACK);
+		this.clear(true);
+		device.draw(rectModel.getAttributes(), false);
 	};
 	this.bindParentEventToFunc = function (event, func) {
 		device.connect(event, func);
@@ -44,8 +44,8 @@ GL.RectView = function (rectModel, device) {
 	this.unleashParentEvent = function (event, func) {
 		device.disconnect(event, func);
 	};
-	this.clear = function (fore_or_back) {
-		device.clear('fore' === fore_or_back ? device.FORE : device.BACK);
+	this.clear = function (drawOnForeground) {
+		device.clear(drawOnForeground);
 	};
 
 };
