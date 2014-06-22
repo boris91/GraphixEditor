@@ -29,7 +29,7 @@
 		    'helpers/TypesHelper',
 		    'helpers/UIGenerator',
 		    'helpers/XhrManager',
-		    'devices/canvas/Stretcher',
+		    'helpers/Stretcher',
 		    'devices/canvas/Painter',
 		    'devices/canvas/Canvas',
 		    'devices/canvas/CanvasManager',

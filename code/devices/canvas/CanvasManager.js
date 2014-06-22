@@ -5,7 +5,7 @@ GL.CanvasManager = function GL_CanvasManager(data) {
 	this._onRedraw = data.onRedraw || function () { };
 
 	this._back = data.back || new GL.Canvas({
-		id: 'canvasBackground',//'back_' + GL.generateUniqueId(),
+		id: 'canvasBackground',
 		forDom: {
 			class: 'forBackCanvas',
 			width: '700px',
@@ -14,9 +14,18 @@ GL.CanvasManager = function GL_CanvasManager(data) {
 		parentId: 'totalLayer',
 	});
 	this._fore = data.fore || new GL.Canvas({
-		id: 'canvasForeground',//'fore_' + GL.generateUniqueId(),
+		id: 'canvasForeground',
 		forDom: {
 			class: 'forForeCanvas',
+			width: '700px',
+			height: '300px'
+		},
+		parentId: 'totalLayer'
+	});
+	this._extra = data.extra || new GL.Canvas({
+		id: 'canvasExtra',
+		forDom: {
+			class: 'forExtraCanvas',
 			width: '700px',
 			height: '300px'
 		},
@@ -78,35 +87,35 @@ GL.CanvasManager = function GL_CanvasManager(data) {
 };
 
 GL.CanvasManager.prototype = {
-	getScale: function () {
-		var scale = this._back.getScale();
+	getScale: function (fromExtra) {
+		var scale = this._getCanvas(fromExtra ? undefined : false).getScale();
 		return {
-			x: scale.x.toFixed(2),
-			y: scale.y.toFixed(2)
+			x: scale.x,
+			y: scale.y
 		};
 	},
 
-	getShift: function () {
-		var shift = this._back.getScale();
+	getShift: function (fromExtra) {
+		var shift = this._getCanvas(fromExtra ? undefined : false).getShift();
 		return {
-			x: shift.x.toFixed(2),
-			y: shift.y.toFixed(2)
+			x: shift.x,
+			y: shift.y
 		};
 	},
 
-	getCoords: function (layerX, layerY) {
+	getCoords: function (layerX, layerY, fromExtra) {
 		return {
-			x: this._back.getCoordX(layerX),
-			y: this._back.getCoordY(layerY)
+			x: this._getCanvas(fromExtra ? undefined : false).getCoordX(layerX),
+			y: this._getCanvas(fromExtra ? undefined : false).getCoordY(layerY)
 		};
 	},
 
-	getDomParent: function () {
-		return this._back.getDomParent();
+	getDomParent: function (fromExtra) {
+		return this._getCanvas(fromExtra ? undefined : false).getDomParent();
 	},
 
-	getRegion: function () {
-		return this._back.getRegion();
+	getRegion: function (fromExtra) {
+		return this._getCanvas(fromExtra ? undefined : false).getRegion();
 	},
 
 	setScaleStep: function (scaleStep) {
@@ -119,23 +128,34 @@ GL.CanvasManager.prototype = {
 		this._fore.setShiftStep(shiftStep);
 	},
 
+	_getCanvas: function (requiredForeground) {
+		var nickname = ('boolean' === typeof requiredForeground ? (requiredForeground ? '_fore' : '_back') : '_extra');
+		return this[nickname];
+	},
+
 	restore: function (drawOnForeground) {
-		this[drawOnForeground ? '_fore' : '_back'].restore();
+		this._getCanvas(drawOnForeground).restore();
 	},
 
 	clear: function (drawOnForeground) {
-		this[drawOnForeground ? '_fore' : '_back'].clear();
+		this._getCanvas(drawOnForeground).clear();
+	},
+
+	clearAll: function () {
+		this._back.clear();
+		this._fore.clear();
+		this._extra.clear();
 	},
 
 	draw: function (attributes, drawOnForeground) {
-		this[drawOnForeground ? '_fore' : '_back'].draw(attributes.type, attributes);
+		this._getCanvas(drawOnForeground).draw(attributes.type, attributes);
 	},
 
 	connect: function (eventName, handler) {
-		this._fore.connect(eventName, handler);
+		this._extra.connect(eventName, handler);
 	},
 
 	disconnect: function (eventName, handler) {
-		this._fore.disconnect(eventName, handler);
+		this._extra.disconnect(eventName, handler);
 	}
 };

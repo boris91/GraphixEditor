@@ -8,7 +8,9 @@
 	height: 400px;
 	background-color: rgba(0,0,0,0.1);
 }
+
 /*for undercanvas backwards layer*/
+
 .forUndercanvasLayer {
 	position: absolute;
 	visibility: visible;
@@ -18,7 +20,21 @@
 	height: 300px;
 	border: 1px solid rgba(0,0,0,0.2);
 }
+
 /*for canvas frames*/
+
+.forExtraCanvas {
+	position: absolute;
+	visibility: visible;
+	left: 50px;
+	top: 50px;
+	background-color: rgba(255,255,255,0.0);
+}
+
+	.forExtraCanvas:hover {
+		cursor: crosshair;
+	}
+
 .forForeCanvas {
 	position: absolute;
 	visibility: visible;
@@ -27,10 +43,6 @@
 	background-color: rgba(255,255,255,0.0);
 }
 
-	.forForeCanvas:hover {
-		cursor: crosshair;
-	}
-
 .forBackCanvas {
 	position: absolute;
 	visibility: visible;
@@ -38,7 +50,9 @@
 	top: 50px;
 	background-color: rgba(255,255,255,0.5);
 }
+
 /*for div frames*/
+
 .forDivDevice {
 	position: absolute;
 	/*visibility: visible;*/

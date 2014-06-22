@@ -50,6 +50,7 @@ GL.User = function GL_User(defaultProps, objectsData) {
 			var i, length, localRegion, objectType;
 			preHandler = preHandler || function () { };
 			postHandler = postHandler || function () { };
+			_device.clear();
 			_device.clear(true);
 			//for objects
 			_models.objects.forEachSelected(function (object, id) {
@@ -65,7 +66,7 @@ GL.User = function GL_User(defaultProps, objectsData) {
 						top: localRegion.t,
 						width: localRegion.w,
 						height: localRegion.h
-					}, true);
+					});
 					postHandler(object, id);
 				}
 			});
@@ -75,8 +76,7 @@ GL.User = function GL_User(defaultProps, objectsData) {
 			var i, length, localRegion, objectType, objectIsSelected;
 			preHandler = preHandler || function () { };
 			postHandler = postHandler || function () { };
-			_device.clear(true);
-			_device.clear(false);
+			_device.clearAll();
 			//for objects
 			_models.objects.forEach(function (object, id) {
 				if (object.isVisible()) {
@@ -93,7 +93,7 @@ GL.User = function GL_User(defaultProps, objectsData) {
 							top: localRegion.t,
 							width: localRegion.w,
 							height: localRegion.h
-						}, true);
+						});
 					} else {
 						_views[objectType].render(false);
 					}
@@ -131,7 +131,7 @@ GL.User = function GL_User(defaultProps, objectsData) {
 						top: localRegion.t,
 						width: localRegion.w,
 						height: localRegion.h
-					}, true);
+					});
 				}
 			});
 			_models.select.setRegion(rationalSelect.getRegion());
